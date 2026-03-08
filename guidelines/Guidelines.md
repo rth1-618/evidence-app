@@ -1,5 +1,5 @@
 **Add your own guidelines here**
-<!--
+
 
 System Guidelines
 
@@ -58,4 +58,3 @@ or initiating processes. They communicate interactivity and should have clear, a
   * Purpose : Used for the least important actions
   * Visual Style : Text-only with no border, using primary color
   * Usage : For actions that should be available but not emphasized
--->

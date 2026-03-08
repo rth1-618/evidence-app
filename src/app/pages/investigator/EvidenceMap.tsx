@@ -65,5 +65,5 @@ export default function EvidenceMap() {
         </div>
       </div>
     </div>
-  );
+  )
 }
