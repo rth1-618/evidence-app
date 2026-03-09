@@ -375,7 +375,7 @@ export const mockSystemUsers: SystemUser[] = [
   {
     id: '4',
     name: 'Elizabeth Carter',
-    email: 'manager@police.uk',
+    email: 'admin@test.com',
     role: 'Evidence Manager',
     badge: 'MGR-5012',
     status: 'active',

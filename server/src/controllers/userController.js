@@ -19,7 +19,8 @@ export const createUser = async (req, res) => {
       email,
       password: hashedPassword,
       role,
-      badge
+      badge,
+      status: 'active' // Default to active when created
     });
 
     res.status(201).json({ success: true, data: { id: newUser._id, name, role } });

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Bell, ChevronDown, LogOut, User, Menu } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
   title: string;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { mockCases, mockEvidence, mockPersonsOfInterest } from '../../utils/mockData';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { DataTable, Column } from '../../components/ui/DataTable';

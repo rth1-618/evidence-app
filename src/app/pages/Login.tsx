@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Shield, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
@@ -15,21 +15,20 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setIsLoading(true);
+    const result = await login(email, password);
 
-    try {
-      const success = await login(email, password);
-      if (success) {
-        // Redirect based on role (will be handled by routes)
-        navigate('/');
-      } else {
-        setError('Invalid email or password. Please try again.');
-      }
-    } catch (err) {
-      setError('An error occurred. Please try again.');
-    } finally {
-      setIsLoading(false);
+    if (result.success) {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+      // Redirect logic based on role
+      const dashboardMap: Record<string, string> = {
+        'FIELD_OFFICER': '/field-officer/dashboard',
+        'EVIDENCE_MANAGER': '/evidence-manager/dashboard',
+        'CUSTODIAN': '/custodian/dashboard',
+        'INVESTIGATOR': '/investigator/dashboard'
+      };
+
+      navigate(dashboardMap[user.role] || '/login');
     }
   };
 
@@ -130,7 +129,7 @@ export default function Login() {
               </div>
               <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                 <span>Manager:</span>
-                <span className="font-mono text-[10px] sm:text-xs">manager@police.uk / manager123</span>
+                <span className="font-mono text-[10px] sm:text-xs">admin@test.com / admin</span>
               </div>
             </div>
           </div>

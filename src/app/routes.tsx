@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from 'react-router';
+import { createBrowserRouter } from 'react-router-dom';
 import { Layout } from './components/layout/Layout';
 import Login from './pages/Login';
 
@@ -29,122 +29,137 @@ import AuditLogs from './pages/evidence-manager/AuditLogs';
 import StorageConfiguration from './pages/evidence-manager/StorageConfiguration';
 import RetentionRules from './pages/evidence-manager/RetentionRules';
 import DisposalReview from './pages/evidence-manager/DisposalReview';
+import { ProtectedRoute } from './context/ProtectedRoute';
+import { HomeRedirect } from './context/HomeRedirect';
 
 export const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <HomeRedirect />
+  },
   {
     path: '/login',
     element: <Login />
   },
-  {
-    path: '/',
-    element: <Navigate to="/login" replace />
-  },
   // Field Officer Routes
   {
-    path: '/field-officer',
-    element: <Layout title="Field Officer Dashboard" />,
+    element: <ProtectedRoute allowedRoles={['FIELD_OFFICER']} />,
     children: [
       {
-        path: 'dashboard',
-        element: <FieldOfficerDashboard />
-      },
-      {
-        path: 'cases',
-        element: <MyCases />
-      },
-      {
-        path: 'submit',
-        element: <SubmitEvidence />
-      },
-      {
-        path: 'alerts',
-        element: <MyAlerts />
-      }
-    ]
+        element: <Layout title="Field Officer Dashboard" />,
+        path: '/field-officer',
+        children: [
+          {
+            path: 'dashboard',
+            element: <FieldOfficerDashboard />
+          },
+          {
+            path: 'cases',
+            element: <MyCases />
+          },
+          {
+            path: 'submit',
+            element: <SubmitEvidence />
+          },
+          {
+            path: 'alerts',
+            element: <MyAlerts />
+          }
+        ]
+      }]
   },
   // Custodian Routes
   {
-    path: '/custodian',
-    element: <Layout title="Custodian Dashboard" />,
-    children: [
-      {
-        path: 'dashboard',
-        element: <CustodianDashboard />
-      },
-      {
-        path: 'scan-store',
-        element: <ScanAndStore />
-      },
-      {
-        path: 'transfers',
-        element: <Transfers />
-      },
-      {
-        path: 'custody-records',
-        element: <CustodyRecords />
-      }
-    ]
+    element: <ProtectedRoute allowedRoles={['CUSTODIAN']} />,
+    children: [{
+      element: <Layout title="Custodian Dashboard" />,
+      path: '/custodian',
+      children: [
+        {
+          path: 'dashboard',
+          element: <CustodianDashboard />
+        },
+        {
+          path: 'scan-store',
+          element: <ScanAndStore />
+        },
+        {
+          path: 'transfers',
+          element: <Transfers />
+        },
+        {
+          path: 'custody-records',
+          element: <CustodyRecords />
+        }
+      ]
+    }]
   },
   // Investigator Routes
   {
-    path: '/investigator',
-    element: <Layout title="Investigator Dashboard" />,
-    children: [
-      {
-        path: 'dashboard',
-        element: <InvestigatorDashboard />
-      },
-      {
-        path: 'cases',
-        element: <Cases />
-      },
-      {
-        path: 'cases/:caseId',
-        element: <CaseDetail />
-      },
-      {
-        path: 'evidence-map',
-        element: <EvidenceMap />
-      },
-      {
-        path: 'lab-requests',
-        element: <LabRequests />
-      }
-    ]
+    element: <ProtectedRoute allowedRoles={['INVESTIGATOR']} />,
+    children: [{
+      path: '/investigator',
+      element: <Layout title="Investigator Dashboard" />,
+      children: [
+        {
+          path: 'dashboard',
+          element: <InvestigatorDashboard />
+        },
+        {
+          path: 'cases',
+          element: <Cases />
+        },
+        {
+          path: 'cases/:caseId',
+          element: <CaseDetail />
+        },
+        {
+          path: 'evidence-map',
+          element: <EvidenceMap />
+        },
+        {
+          path: 'lab-requests',
+          element: <LabRequests />
+        }
+      ]
+    }]
   },
   // Evidence Manager Routes
   {
-    path: '/evidence-manager',
-    element: <Layout title="Evidence Manager Dashboard" />,
-    children: [
-      {
-        path: 'dashboard',
-        element: <EvidenceManagerDashboard />
-      },
-      {
-        path: 'users',
-        element: <Users />
-      },
-      {
-        path: 'analytics',
-        element: <Analytics />
-      },
-      {
-        path: 'audit-logs',
-        element: <AuditLogs />
-      },
-      {
-        path: 'storage',
-        element: <StorageConfiguration />
-      },
-      {
-        path: 'retention',
-        element: <RetentionRules />
-      },
-      {
-        path: 'disposal',
-        element: <DisposalReview />
-      }
-    ]
+    element: <ProtectedRoute allowedRoles={['EVIDENCE_MANAGER']} />,
+    children: [{
+      path: '/evidence-manager',
+      element: <Layout title="Evidence Manager Dashboard" />,
+      children: [
+        {
+          path: 'dashboard',
+          element: <EvidenceManagerDashboard />
+        },
+        {
+          path: 'users',
+          element: <Users />
+        },
+        {
+          path: 'analytics',
+          element: <Analytics />
+        },
+        {
+          path: 'audit-logs',
+          element: <AuditLogs />
+        },
+        {
+          path: 'storage',
+          element: <StorageConfiguration />
+        },
+        {
+          path: 'retention',
+          element: <RetentionRules />
+        },
+        {
+          path: 'disposal',
+          element: <DisposalReview />
+        }
+      ]
+    }]
   }
 ]);
