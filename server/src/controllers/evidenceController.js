@@ -2,12 +2,22 @@ import Evidence from '../models/EvidenceSchema.js';
 
 // @desc    Get all evidence
 // @route   GET /api/evidence
-export const getEvidence = async (req, res) => {
+export const getAllEvidence = async (req, res) => {
   try {
-    const evidence = await Evidence.find();
-    res.json(evidence);
+    const evidence = await Evidence.find().sort({ createdAt: -1 });
+    res.status(200).json({ success: true, count: evidence.length, data: evidence });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getEvidenceById = async (req, res) => {
+  try {
+    const item = await Evidence.findOne({ id: req.params.id });
+    if (!item) return res.status(404).json({ success: false, message: 'Not found' });
+    res.status(200).json({ success: true, data: item });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 

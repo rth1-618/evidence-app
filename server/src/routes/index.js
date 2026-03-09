@@ -1,12 +1,13 @@
 import express from 'express';
+import authRoutes from './authRoutes.js';
 import evidenceRoutes from './evidenceRoutes.js';
-// import caseRoutes from './caseRoutes.js';
-// import userRoutes from './userRoutes.js'; 
+import userRoutes from './userRoutes.js';
 
 const router = express.Router();
 
-// Register all modules here
+// This adds the prefix /auth to everything in authRoutes
+router.use('/auth', authRoutes);
+router.use('/users', userRoutes);
 router.use('/evidence', evidenceRoutes);
-router.use('/cases', caseRoutes);
 
 export default router;
