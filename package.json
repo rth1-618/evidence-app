@@ -1,7 +1,9 @@
 {
-  "name": "@figma/my-make-file",
-  "private": true,
+  "name": "omnicase",
   "version": "0.0.1",
+  "private": true,
+  "license": "ISC",
+  "author": "",
   "type": "module",
   "scripts": {
     "build": "vite build",

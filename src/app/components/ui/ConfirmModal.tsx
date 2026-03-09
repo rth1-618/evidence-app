@@ -23,11 +23,11 @@ export function ConfirmModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
-        <div className="p-6">
-          <div className="flex items-start gap-4">
+      <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full">
+        <div className="p-4 sm:p-6">
+          <div className="flex items-start gap-3 sm:gap-4">
             {isDestructive && (
               <div className="flex-shrink-0">
                 <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
@@ -35,15 +35,15 @@ export function ConfirmModal({
                 </div>
               </div>
             )}
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">{title}</h3>
               <p className="text-sm text-gray-600">{message}</p>
             </div>
           </div>
-          <div className="flex gap-3 mt-6">
+          <div className="flex flex-col sm:flex-row gap-3 mt-6">
             <button
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors order-2 sm:order-1"
             >
               Cancel
             </button>
@@ -52,7 +52,7 @@ export function ConfirmModal({
                 onConfirm();
                 onClose();
               }}
-              className={`flex-1 px-4 py-2 rounded-lg text-white transition-colors ${
+              className={`flex-1 px-4 py-2 rounded-lg text-white transition-colors order-1 sm:order-2 ${
                 isDestructive
                   ? 'bg-red-600 hover:bg-red-700'
                   : 'bg-blue-600 hover:bg-blue-700'

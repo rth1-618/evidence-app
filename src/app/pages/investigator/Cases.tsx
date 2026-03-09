@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { mockCases, mockEvidence } from '../../utils/mockData';
 import { DataTable, Column } from '../../components/ui/DataTable';
 import { StatusBadge } from '../../components/ui/StatusBadge';
@@ -7,6 +8,7 @@ import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function Cases() {
+  const navigate = useNavigate();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newCase, setNewCase] = useState({ title: '', type: '', officers: '' });
 
@@ -33,6 +35,10 @@ export default function Cases() {
     setNewCase({ title: '', type: '', officers: '' });
   };
 
+  const handleRowClick = (caseItem: typeof mockCases[0]) => {
+    navigate(`/investigator/cases/${caseItem.id}`);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -53,6 +59,7 @@ export default function Cases() {
         data={mockCases}
         columns={caseColumns}
         searchPlaceholder="Search cases..."
+        onRowClick={handleRowClick}
       />
 
       <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} title="Create New Case">

@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Check for stored session
-    const storedUser = localStorage.getItem('decms_user');
+    const storedUser = localStorage.getItem('omnicase_user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
@@ -76,7 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (mockUser && mockUser.password === password) {
       const { password: _, ...userWithoutPassword } = mockUser;
       setUser(userWithoutPassword);
-      localStorage.setItem('decms_user', JSON.stringify(userWithoutPassword));
+      localStorage.setItem('omnicase_user', JSON.stringify(userWithoutPassword));
       return true;
     }
     return false;
@@ -84,7 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('decms_user');
+    localStorage.removeItem('omnicase_user');
   };
 
   return (

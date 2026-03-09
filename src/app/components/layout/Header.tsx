@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { Bell, ChevronDown, LogOut, User } from 'lucide-react';
+import { Bell, ChevronDown, LogOut, User, Menu } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router';
 
 interface HeaderProps {
   title: string;
   breadcrumbs?: string[];
+  onMenuClick: () => void;
 }
 
-export function Header({ title, breadcrumbs = [] }: HeaderProps) {
+export function Header({ title, breadcrumbs = [], onMenuClick }: HeaderProps) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -27,24 +28,35 @@ export function Header({ title, breadcrumbs = [] }: HeaderProps) {
   ];
 
   return (
-    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8">
-      {/* Left: Title and Breadcrumbs */}
-      <div>
-        <h1 className="text-xl font-semibold text-gray-900">{title}</h1>
-        {breadcrumbs.length > 0 && (
-          <div className="flex items-center gap-2 text-sm text-gray-500 mt-0.5">
-            {breadcrumbs.map((crumb, index) => (
-              <React.Fragment key={index}>
-                {index > 0 && <span>/</span>}
-                <span>{crumb}</span>
-              </React.Fragment>
-            ))}
-          </div>
-        )}
+    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 lg:px-8">
+      {/* Left: Hamburger Menu + Title and Breadcrumbs */}
+      <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+        {/* Hamburger Menu - only visible on mobile */}
+        <button
+          onClick={onMenuClick}
+          className="lg:hidden text-gray-600 hover:bg-gray-100 p-2 rounded-lg transition-colors flex-shrink-0"
+          aria-label="Open menu"
+        >
+          <Menu className="w-6 h-6" />
+        </button>
+
+        <div className="min-w-0 flex-1">
+          <h1 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">{title}</h1>
+          {breadcrumbs.length > 0 && (
+            <div className="hidden sm:flex items-center gap-2 text-sm text-gray-500 mt-0.5">
+              {breadcrumbs.map((crumb, index) => (
+                <React.Fragment key={index}>
+                  {index > 0 && <span>/</span>}
+                  <span className="truncate">{crumb}</span>
+                </React.Fragment>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Right: Notifications and User Menu */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
         {/* Notifications */}
         <div className="relative">
           <button
@@ -61,7 +73,7 @@ export function Header({ title, breadcrumbs = [] }: HeaderProps) {
                 className="fixed inset-0 z-10"
                 onClick={() => setShowNotifications(false)}
               />
-              <div className="absolute right-0 top-12 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-20">
+              <div className="absolute right-0 top-12 w-80 max-w-[calc(100vw-2rem)] bg-white rounded-lg shadow-lg border border-gray-200 z-20">
                 <div className="p-4 border-b border-gray-200">
                   <h3 className="font-semibold text-gray-900">Notifications</h3>
                 </div>
@@ -90,16 +102,16 @@ export function Header({ title, breadcrumbs = [] }: HeaderProps) {
         <div className="relative">
           <button
             onClick={() => setShowUserMenu(!showUserMenu)}
-            className="flex items-center gap-3 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
-            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
               <User className="w-4 h-4 text-white" />
             </div>
-            <div className="text-left">
+            <div className="text-left hidden sm:block">
               <div className="text-sm font-medium text-gray-900">{user?.name}</div>
               <div className="text-xs text-gray-500">{user?.badge}</div>
             </div>
-            <ChevronDown className="w-4 h-4 text-gray-500" />
+            <ChevronDown className="w-4 h-4 text-gray-500 hidden sm:block" />
           </button>
 
           {showUserMenu && (

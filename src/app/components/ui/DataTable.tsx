@@ -67,7 +67,7 @@ export function DataTable<T extends Record<string, any>>({
   return (
     <div className="space-y-4">
       {/* Search and Filters */}
-      <div className="flex gap-4">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
@@ -93,7 +93,7 @@ export function DataTable<T extends Record<string, any>>({
                 {columns.map((column) => (
                   <th
                     key={column.key}
-                    className={`px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider ${
+                    className={`px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider whitespace-nowrap ${
                       column.sortable ? 'cursor-pointer hover:bg-gray-100' : ''
                     }`}
                     onClick={() => column.sortable && handleSort(column.key)}
@@ -111,7 +111,7 @@ export function DataTable<T extends Record<string, any>>({
             <tbody className="divide-y divide-gray-200">
               {paginatedData.length === 0 ? (
                 <tr>
-                  <td colSpan={columns.length} className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan={columns.length} className="px-3 sm:px-6 py-12 text-center text-sm text-gray-500">
                     {emptyMessage}
                   </td>
                 </tr>
@@ -125,7 +125,7 @@ export function DataTable<T extends Record<string, any>>({
                     onClick={() => onRowClick?.(item)}
                   >
                     {columns.map((column) => (
-                      <td key={column.key} className="px-6 py-4 text-sm text-gray-900">
+                      <td key={column.key} className="px-3 sm:px-6 py-4 text-xs sm:text-sm text-gray-900">
                         {column.render ? column.render(item) : item[column.key]}
                       </td>
                     ))}
@@ -138,8 +138,8 @@ export function DataTable<T extends Record<string, any>>({
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="px-6 py-3 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
-            <div className="text-sm text-gray-600">
+          <div className="px-3 sm:px-6 py-3 bg-gray-50 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="text-xs sm:text-sm text-gray-600 text-center sm:text-left">
               Showing {(currentPage - 1) * itemsPerPage + 1} to{' '}
               {Math.min(currentPage * itemsPerPage, sortedData.length)} of{' '}
               {sortedData.length} results
@@ -152,7 +152,7 @@ export function DataTable<T extends Record<string, any>>({
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              <span className="px-3 py-1 text-sm text-gray-700">
+              <span className="px-3 py-1 text-xs sm:text-sm text-gray-700">
                 Page {currentPage} of {totalPages}
               </span>
               <button

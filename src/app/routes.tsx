@@ -17,6 +17,7 @@ import CustodyRecords from './pages/custodian/CustodyRecords';
 // Investigator
 import InvestigatorDashboard from './pages/investigator/Dashboard';
 import Cases from './pages/investigator/Cases';
+import CaseDetail from './pages/investigator/CaseDetail';
 import EvidenceMap from './pages/investigator/EvidenceMap';
 import LabRequests from './pages/investigator/LabRequests';
 
@@ -96,6 +97,10 @@ export const router = createBrowserRouter([
       {
         path: 'cases',
         element: <Cases />
+      },
+      {
+        path: 'cases/:caseId',
+        element: <CaseDetail />
       },
       {
         path: 'evidence-map',
