@@ -1,6 +1,17 @@
 import bcrypt from 'bcryptjs';
 import User from '../models/UserSchema.js';
 
+// @desc    Get all users
+// @route   GET /api/users
+export const getUsers = async (req, res) => {
+  try {
+    const users = await User.find().select('-password'); // Exclude passwords for security
+    res.status(200).json({ success: true, data: users });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export const createUser = async (req, res) => {
   try {
     const { name, email, password, role, badge } = req.body;
@@ -25,6 +36,6 @@ export const createUser = async (req, res) => {
 
     res.status(201).json({ success: true, data: { id: newUser._id, name, role } });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 };

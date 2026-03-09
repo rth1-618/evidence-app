@@ -9,7 +9,7 @@ export const useUsers = () => {
   const { data: users = [], isLoading } = useQuery({
     queryKey: ['users'],
     queryFn: async () => {
-      const res = await api.get('/users');
+      const res = await api.get('/users/all');
       return res.data.data;
     },
   });

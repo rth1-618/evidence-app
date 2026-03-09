@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { mockSystemUsers } from '../../utils/mockData';
+// import { mockSystemUsers } from '../../utils/mockData';
 import { DataTable, Column } from '../../components/ui/DataTable';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { Modal } from '../../components/ui/Modal';
@@ -13,7 +13,7 @@ export default function Users() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newUser, setNewUser] = useState({ name: '', email: '', role: '' as any, badge: '', password: '' } as IUser);
 
-  const userColumns: Column<typeof mockSystemUsers[0]>[] = [
+  const userColumns: Column<IUser>[] = [
     { key: 'badge', label: 'Badge', sortable: true },
     { key: 'name', label: 'Name', sortable: true },
     { key: 'email', label: 'Email', sortable: true },
@@ -21,13 +21,13 @@ export default function Users() {
     {
       key: 'status',
       label: 'Status',
-      render: (item) => <StatusBadge status={item.status} />
+      render: (item) => <StatusBadge status={item.status as any} />
     },
     {
-      key: 'createdDate',
+      key: 'createdAt', //need to match response keys from backend
       label: 'Created',
       sortable: true,
-      render: (item) => new Date(item.createdDate).toLocaleDateString()
+      render: (item) => new Date(item.createdAt as any).toLocaleDateString()
     }
   ];
   const handleCreateUser = (e: React.FormEvent<HTMLFormElement>) => {

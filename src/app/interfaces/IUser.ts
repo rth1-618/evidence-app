@@ -6,6 +6,7 @@ export interface IUser {
   role: UserRole;
   badge?: string;
   status?: string;
+  createdAt?: string;
 }
 
 export type UserRole = 'FIELD_OFFICER' | 'CUSTODIAN' | 'INVESTIGATOR' | 'EVIDENCE_MANAGER' | 'INVALID';
