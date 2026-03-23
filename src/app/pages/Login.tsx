@@ -41,7 +41,7 @@ export default function Login() {
             <Shield className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">OmniCase</h1>
-          <p className="text-sm sm:text-base text-blue-200">Digital Evidence & Custody Management System</p>
+          <p className="text-sm sm:text-base text-blue-200"> Evidence Custody Management System</p>
           <p className="text-blue-300 text-xs sm:text-sm mt-2">UK Police Department</p>
         </div>
 
