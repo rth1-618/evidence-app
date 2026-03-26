@@ -10,16 +10,23 @@ export interface Case {
 
 export interface Evidence {
   id: string;
+  evidenceId?: string;
   title: string;
   type: string;
-  caseId: string;
+  description?: string;
+  img?: string[];
+  voiceNote?: string[];
+  video?: string[];
+  caseId?: string;
   status: 'active' | 'pending' | 'in-lab' | 'disposed';
-  location: { lat: number; lng: number; address: string };
+  locationFound: { lat: number; lng: number; address: string };
+  currentLocation?: { lat: number; lng: number; address: string };
   submittedBy: string;
+  investigatorIds?: string[];
   submittedDate: string;
-  description: string;
   qrCode?: string;
   storedAt?: string;
+  pois?: PersonOfInterest[];
   markedForCourt?: boolean;
 }
 
@@ -135,7 +142,7 @@ export const mockEvidence: Evidence[] = [
     type: 'Video',
     caseId: 'CASE-001',
     status: 'active',
-    location: { lat: 51.5074, lng: -0.1278, address: '42 High Street, London' },
+    locationFound: { lat: 51.5074, lng: -0.1278, address: '42 High Street, London' },
     submittedBy: 'John Mitchell',
     submittedDate: '2026-02-10',
     description: 'CCTV footage showing suspect entering premises at 02:15 AM',
@@ -148,7 +155,7 @@ export const mockEvidence: Evidence[] = [
     type: 'Physical',
     caseId: 'CASE-001',
     status: 'in-lab',
-    location: { lat: 51.5074, lng: -0.1278, address: '42 High Street, London' },
+    locationFound: { lat: 51.5074, lng: -0.1278, address: '42 High Street, London' },
     submittedBy: 'John Mitchell',
     submittedDate: '2026-02-10',
     description: 'Lifted fingerprints from rear door handle'
@@ -159,7 +166,7 @@ export const mockEvidence: Evidence[] = [
     type: 'Physical',
     caseId: 'CASE-002',
     status: 'active',
-    location: { lat: 52.0406, lng: -0.7594, address: 'M1 Junction 15, Northamptonshire' },
+    locationFound: { lat: 52.0406, lng: -0.7594, address: 'M1 Junction 15, Northamptonshire' },
     submittedBy: 'John Mitchell',
     submittedDate: '2026-02-15',
     description: 'Damaged registration plate found at scene',
