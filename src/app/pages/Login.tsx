@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Shield, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
@@ -15,21 +15,20 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setIsLoading(true);
+    const result = await login(email, password);
 
-    try {
-      const success = await login(email, password);
-      if (success) {
-        // Redirect based on role (will be handled by routes)
-        navigate('/');
-      } else {
-        setError('Invalid email or password. Please try again.');
-      }
-    } catch (err) {
-      setError('An error occurred. Please try again.');
-    } finally {
-      setIsLoading(false);
+    if (result.success) {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+      // Redirect logic based on role
+      const dashboardMap: Record<string, string> = {
+        'FIELD_OFFICER': '/field-officer/dashboard',
+        'EVIDENCE_MANAGER': '/evidence-manager/dashboard',
+        'CUSTODIAN': '/custodian/dashboard',
+        'INVESTIGATOR': '/investigator/dashboard'
+      };
+
+      navigate(dashboardMap[user.role] || '/login');
     }
   };
 
@@ -42,7 +41,7 @@ export default function Login() {
             <Shield className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">OmniCase</h1>
-          <p className="text-sm sm:text-base text-blue-200">Digital Evidence & Custody Management System</p>
+          <p className="text-sm sm:text-base text-blue-200"> Evidence Custody Management System</p>
           <p className="text-blue-300 text-xs sm:text-sm mt-2">UK Police Department</p>
         </div>
 
@@ -118,19 +117,19 @@ export default function Login() {
             <div className="space-y-2 text-xs text-gray-600">
               <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                 <span>Field Officer:</span>
-                <span className="font-mono text-[10px] sm:text-xs">officer@police.uk / officer123</span>
+                <span className="font-mono text-[10px] sm:text-xs">parth@police.uk / parth</span>
               </div>
               <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                 <span>Custodian:</span>
-                <span className="font-mono text-[10px] sm:text-xs">custodian@police.uk / custodian123</span>
+                <span className="font-mono text-[10px] sm:text-xs">chein@police.uk / chein</span>
               </div>
               <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                 <span>Investigator:</span>
-                <span className="font-mono text-[10px] sm:text-xs">investigator@police.uk / investigator123</span>
+                <span className="font-mono text-[10px] sm:text-xs">xavier@police.uk / xavier</span>
               </div>
               <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
                 <span>Manager:</span>
-                <span className="font-mono text-[10px] sm:text-xs">manager@police.uk / manager123</span>
+                <span className="font-mono text-[10px] sm:text-xs">admin@test.com / admin</span>
               </div>
             </div>
           </div>

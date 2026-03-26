@@ -1,98 +1,67 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { IUser } from '../interfaces/IUser';
+import api from '../api/axios';
 
-export type UserRole = 'field-officer' | 'custodian' | 'investigator' | 'evidence-manager';
 
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: UserRole;
-  badge?: string;
-}
-
-interface AuthContextType {
-  user: User | null;
-  login: (email: string, password: string) => Promise<boolean>;
+export interface IAuthContextType {
+  user: IUser | null;
+  login: (email: string, password: string) => Promise<{ 
+        success: boolean, 
+        message?: string 
+      }>;
   logout: () => void;
   isLoading: boolean;
+  isAuthenticated: boolean;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<IAuthContextType | undefined>(undefined);
 
-// Mock users for demonstration
-const MOCK_USERS: Record<string, User & { password: string }> = {
-  'officer@police.uk': {
-    id: '1',
-    email: 'officer@police.uk',
-    password: 'officer123',
-    name: 'John Mitchell',
-    role: 'field-officer',
-    badge: 'FO-2451'
-  },
-  'custodian@police.uk': {
-    id: '2',
-    email: 'custodian@police.uk',
-    password: 'custodian123',
-    name: 'Sarah Williams',
-    role: 'custodian',
-    badge: 'CS-1892'
-  },
-  'investigator@police.uk': {
-    id: '3',
-    email: 'investigator@police.uk',
-    password: 'investigator123',
-    name: 'David Thompson',
-    role: 'investigator',
-    badge: 'INV-3241'
-  },
-  'manager@police.uk': {
-    id: '4',
-    email: 'manager@police.uk',
-    password: 'manager123',
-    name: 'Elizabeth Carter',
-    role: 'evidence-manager',
-    badge: 'MGR-5012'
-  }
-};
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUser] = useState<IUser | null>(null);
+  const [loading, setLoading] = useState(true);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
+  // Check if user is already logged in on page load
   useEffect(() => {
-    // Check for stored session
-    const storedUser = localStorage.getItem('omnicase_user');
-    if (storedUser) {
+    const storedUser = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
+    
+    if (storedUser && token) {
       setUser(JSON.parse(storedUser));
     }
-    setIsLoading(false);
+    setLoading(false);
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
+  const login = async (email: string, password: string) => {
+    try {
+      const res = await api.post('/auth/login', { email, password });
+      const { token, user: userData } = res.data;
 
-    const mockUser = MOCK_USERS[email.toLowerCase()];
-    if (mockUser && mockUser.password === password) {
-      const { password: _, ...userWithoutPassword } = mockUser;
-      setUser(userWithoutPassword);
-      localStorage.setItem('omnicase_user', JSON.stringify(userWithoutPassword));
-      return true;
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(userData));
+      
+      setUser(userData);
+      return { success: true };
+    } catch (error: any ) {
+      return { 
+        success: false, 
+        message: error.response?.data?.message || 'Login failed' 
+      };
     }
-    return false;
   };
 
   const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setUser(null);
-    localStorage.removeItem('omnicase_user');
+    window.location.href = '/login'; // Force redirect
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, login, logout, isLoading: loading, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
 export function useAuth() {
   const context = useContext(AuthContext);

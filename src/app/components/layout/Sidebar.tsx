@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router';
+import { NavLink } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Briefcase, 
@@ -20,7 +20,7 @@ import {
   Shield,
   X
 } from 'lucide-react';
-import type { UserRole } from '../../context/AuthContext';
+import { UserRole } from '../../interfaces/IUser';
 
 interface NavItem {
   path: string;
@@ -31,31 +31,31 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   // Field Officer
-  { path: '/field-officer/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['field-officer'] },
-  { path: '/field-officer/cases', label: 'My Cases', icon: <Briefcase className="w-5 h-5" />, roles: ['field-officer'] },
-  { path: '/field-officer/submit', label: 'Submit Evidence', icon: <Upload className="w-5 h-5" />, roles: ['field-officer'] },
-  { path: '/field-officer/alerts', label: 'My Alerts', icon: <Bell className="w-5 h-5" />, roles: ['field-officer'] },
+  { path: '/field-officer/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['FIELD_OFFICER'] },
+  { path: '/field-officer/cases', label: 'My Cases', icon: <Briefcase className="w-5 h-5" />, roles: ['FIELD_OFFICER'] },
+  { path: '/field-officer/submit', label: 'Submit Evidence', icon: <Upload className="w-5 h-5" />, roles: ['FIELD_OFFICER'] },
+  { path: '/field-officer/alerts', label: 'My Alerts', icon: <Bell className="w-5 h-5" />, roles: ['FIELD_OFFICER'] },
   
   // Custodian
-  { path: '/custodian/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['custodian'] },
-  { path: '/custodian/scan-store', label: 'Scan & Store', icon: <QrCode className="w-5 h-5" />, roles: ['custodian'] },
-  { path: '/custodian/transfers', label: 'Transfers', icon: <ArrowLeftRight className="w-5 h-5" />, roles: ['custodian'] },
-  { path: '/custodian/custody-records', label: 'Custody Records', icon: <Archive className="w-5 h-5" />, roles: ['custodian'] },
+  { path: '/custodian/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['CUSTODIAN'] },
+  { path: '/custodian/scan-store', label: 'Scan & Store', icon: <QrCode className="w-5 h-5" />, roles: ['CUSTODIAN'] },
+  { path: '/custodian/transfers', label: 'Transfers', icon: <ArrowLeftRight className="w-5 h-5" />, roles: ['CUSTODIAN'] },
+  { path: '/custodian/custody-records', label: 'Custody Records', icon: <Archive className="w-5 h-5" />, roles: ['CUSTODIAN'] },
   
   // Investigator
-  { path: '/investigator/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['investigator'] },
-  { path: '/investigator/cases', label: 'Cases', icon: <Folder className="w-5 h-5" />, roles: ['investigator'] },
-  { path: '/investigator/evidence-map', label: 'Evidence Map', icon: <Map className="w-5 h-5" />, roles: ['investigator'] },
-  { path: '/investigator/lab-requests', label: 'Lab Requests', icon: <FlaskConical className="w-5 h-5" />, roles: ['investigator'] },
+  { path: '/investigator/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['INVESTIGATOR'] },
+  { path: '/investigator/cases', label: 'Cases', icon: <Folder className="w-5 h-5" />, roles: ['INVESTIGATOR'] },
+  { path: '/investigator/evidence-map', label: 'Evidence Map', icon: <Map className="w-5 h-5" />, roles: ['INVESTIGATOR'] },
+  { path: '/investigator/lab-requests', label: 'Lab Requests', icon: <FlaskConical className="w-5 h-5" />, roles: ['INVESTIGATOR'] },
   
   // Evidence Manager
-  { path: '/evidence-manager/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['evidence-manager'] },
-  { path: '/evidence-manager/users', label: 'Users', icon: <Users className="w-5 h-5" />, roles: ['evidence-manager'] },
-  { path: '/evidence-manager/analytics', label: 'Analytics', icon: <BarChart3 className="w-5 h-5" />, roles: ['evidence-manager'] },
-  { path: '/evidence-manager/audit-logs', label: 'Audit Logs', icon: <FileText className="w-5 h-5" />, roles: ['evidence-manager'] },
-  { path: '/evidence-manager/storage', label: 'Storage Config', icon: <Database className="w-5 h-5" />, roles: ['evidence-manager'] },
-  { path: '/evidence-manager/retention', label: 'Retention Rules', icon: <Clock className="w-5 h-5" />, roles: ['evidence-manager'] },
-  { path: '/evidence-manager/disposal', label: 'Disposal Review', icon: <Trash2 className="w-5 h-5" />, roles: ['evidence-manager'] },
+  { path: '/evidence-manager/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['EVIDENCE_MANAGER'] },
+  { path: '/evidence-manager/users', label: 'Users', icon: <Users className="w-5 h-5" />, roles: ['EVIDENCE_MANAGER'] },
+  { path: '/evidence-manager/analytics', label: 'Analytics', icon: <BarChart3 className="w-5 h-5" />, roles: ['EVIDENCE_MANAGER'] },
+  { path: '/evidence-manager/audit-logs', label: 'Audit Logs', icon: <FileText className="w-5 h-5" />, roles: ['EVIDENCE_MANAGER'] },
+  { path: '/evidence-manager/storage', label: 'Storage Config', icon: <Database className="w-5 h-5" />, roles: ['EVIDENCE_MANAGER'] },
+  { path: '/evidence-manager/retention', label: 'Retention Rules', icon: <Clock className="w-5 h-5" />, roles: ['EVIDENCE_MANAGER'] },
+  { path: '/evidence-manager/disposal', label: 'Disposal Review', icon: <Trash2 className="w-5 h-5" />, roles: ['EVIDENCE_MANAGER'] },
 ];
 
 interface SidebarProps {

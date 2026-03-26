@@ -1,44 +1,30 @@
-import { useEffect } from 'react';
-import { RouterProvider, useNavigate } from 'react-router';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
+import { RouterProvider } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
 import { router } from './routes';
 import { Toaster } from 'sonner';
 
-function AppContent() {
-  const { user, isLoading } = useAuth();
-
-  useEffect(() => {
-    if (!isLoading && user) {
-      // Redirect to role-specific dashboard
-      const roleRoutes = {
-        'field-officer': '/field-officer/dashboard',
-        'custodian': '/custodian/dashboard',
-        'investigator': '/investigator/dashboard',
-        'evidence-manager': '/evidence-manager/dashboard'
-      };
-      
-      const currentPath = window.location.pathname;
-      const expectedPath = roleRoutes[user.role];
-      
-      // Only redirect if on login page or root
-      if (currentPath === '/login' || currentPath === '/') {
-        window.location.href = expectedPath;
-      }
-    }
-  }, [user, isLoading]);
-
-  return (
-    <>
-      <RouterProvider router={router} />
-      <Toaster position="top-right" richColors />
-    </>
-  );
-}
+// Create a client instance (outside the component)
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1, // How many times to retry failed requests
+      refetchOnWindowFocus: false, // Prevents spamming API when switching tabs
+    },
+  },
+});
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+
+      <ReactQueryDevtools initialIsOpen={false} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+        <Toaster position="top-right" richColors />
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }

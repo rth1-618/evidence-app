@@ -24,7 +24,7 @@ export default function EvidenceMap() {
           {mockEvidence.map((evidence) => (
             <Marker
               key={evidence.id}
-              position={[evidence.location.lat, evidence.location.lng]}
+              position={[evidence.locationFound.lat, evidence.locationFound.lng]}
             >
               <Popup>
                 <div className="p-2">
@@ -34,7 +34,7 @@ export default function EvidenceMap() {
                     <StatusBadge status={evidence.status} size="sm" />
                   </div>
                   <div className="text-xs text-gray-500 mt-2">
-                    {evidence.location.address}
+                    {evidence.locationFound.address}
                   </div>
                 </div>
               </Popup>
