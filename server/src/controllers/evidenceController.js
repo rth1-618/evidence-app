@@ -21,6 +21,16 @@ export const getEvidenceById = async (req, res) => {
   }
 };
 
+export const getMyEvidences = async (req, res) => {
+  try {
+    // Filter by the ID of the user from the JWT (protect middleware)
+    const evidence = await Evidence.find({ submittedBy: req.user._id }).sort({ createdAt: -1 });
+    res.status(200).json({ success: true, data: evidence });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+}
+
 // @desc    Create new evidence
 // @route   POST /api/evidence
 export const createEvidence = async (req, res) => {

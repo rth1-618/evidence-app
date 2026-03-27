@@ -31,6 +31,7 @@ import RetentionRules from './pages/evidence-manager/RetentionRules';
 import DisposalReview from './pages/evidence-manager/DisposalReview';
 import { ProtectedRoute } from './context/ProtectedRoute';
 import { HomeRedirect } from './context/HomeRedirect';
+import MyEvidences from './pages/field-officer/MyEvidences';
 
 export const router = createBrowserRouter([
   {
@@ -56,6 +57,10 @@ export const router = createBrowserRouter([
           {
             path: 'cases',
             element: <MyCases />
+          },
+          {
+            path: 'my-submissions',
+            element: <MyEvidences />
           },
           {
             path: 'submit',
