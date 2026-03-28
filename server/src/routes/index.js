@@ -2,6 +2,7 @@ import express from 'express';
 import authRoutes from './authRoutes.js';
 import evidenceRoutes from './evidenceRoutes.js';
 import userRoutes from './userRoutes.js';
+import shelfRoutes from './shelfRotes.js';
 
 const router = express.Router();
 
@@ -9,5 +10,6 @@ const router = express.Router();
 router.use('/auth', authRoutes);
 router.use('/users', userRoutes);
 router.use('/evidence', evidenceRoutes);
+router.use('/shelves', shelfRoutes);
 
 export default router;
