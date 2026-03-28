@@ -7,7 +7,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 export default function InvestigatorDashboard() {
   const openCases = mockCases.filter(c => c.status === 'open').length;
   const closedCases = mockCases.filter(c => c.status === 'closed').length;
-  const overdueLabReports = mockLabRequests.filter(r => 
+  const overdueLabReports = mockLabRequests.filter(r =>
     r.status === 'in-lab' && new Date(r.dueDate) < new Date()
   ).length;
 
@@ -90,7 +90,7 @@ export default function InvestigatorDashboard() {
                   <div className="font-medium text-sm">{evidence.id}</div>
                   <div className="text-xs text-gray-600">{evidence.title}</div>
                 </div>
-                <StatusBadge status={evidence.status} />
+                <StatusBadge color={evidence.status} />
               </div>
             ))}
           </div>
@@ -112,7 +112,7 @@ export default function InvestigatorDashboard() {
                     Due: {new Date(request.dueDate).toLocaleDateString()}
                   </div>
                 </div>
-                <StatusBadge status={request.status} />
+                <StatusBadge color={request.status} />
               </div>
             </div>
           ))}

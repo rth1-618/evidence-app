@@ -131,7 +131,7 @@ export default function DisposalReview() {
                       {new Date(evidence.retentionExpiry).toLocaleDateString()}
                     </td>
                     <td className="px-4 py-3">
-                      <StatusBadge status={evidence.status} />
+                      <StatusBadge color={evidence.status} />
                     </td>
                   </tr>
                 ))}

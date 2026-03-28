@@ -21,7 +21,7 @@ export default function Users() {
     {
       key: 'status',
       label: 'Status',
-      render: (item) => <StatusBadge status={item.status as any} />
+      render: (item) => <StatusBadge color={item.status as any} />
     },
     {
       key: 'createdAt', //need to match response keys from backend

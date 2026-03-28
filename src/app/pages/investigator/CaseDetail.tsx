@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  mockCases, 
-  mockEvidence, 
+import {
+  mockCases,
+  mockEvidence,
   mockPersonsOfInterest,
-  type PersonOfInterest 
+  type PersonOfInterest
 } from '../../utils/mockData';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { Modal } from '../../components/ui/Modal';
-import { 
-  ArrowLeft, 
-  Plus, 
-  Link2, 
-  Users, 
-  FileText, 
+import {
+  ArrowLeft,
+  Plus,
+  Link2,
+  Users,
+  FileText,
   MapPin,
   Calendar,
   User,
@@ -25,20 +25,20 @@ import { toast } from 'sonner';
 export default function CaseDetail() {
   const { caseId } = useParams();
   const navigate = useNavigate();
-  
+
   const caseData = mockCases.find(c => c.id === caseId);
   const caseEvidence = mockEvidence.filter(e => e.caseId === caseId);
   const casePersons = mockPersonsOfInterest.filter(p => p.caseId === caseId);
-  
+
   // Available evidence not yet attached to this case
   const availableEvidence = mockEvidence.filter(e => e.caseId !== caseId);
-  
+
   const [caseDetails, setCaseDetails] = useState({
     description: caseData?.title || '',
     notes: '',
     priority: 'medium'
   });
-  
+
   const [showAttachEvidenceModal, setShowAttachEvidenceModal] = useState(false);
   const [showAddPersonModal, setShowAddPersonModal] = useState(false);
   const [selectedEvidence, setSelectedEvidence] = useState<string[]>([]);
@@ -111,7 +111,7 @@ export default function CaseDetail() {
             <p className="text-gray-600 mt-1">{caseData.title}</p>
           </div>
         </div>
-        <StatusBadge status={caseData.status} />
+        <StatusBadge color={caseData.status} />
       </div>
 
       {/* Case Overview */}
@@ -205,7 +205,7 @@ export default function CaseDetail() {
             Attach Evidence
           </button>
         </div>
-        
+
         {caseEvidence.length === 0 ? (
           <p className="text-gray-500 text-center py-8">No evidence attached yet</p>
         ) : (
@@ -218,7 +218,7 @@ export default function CaseDetail() {
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <span className="font-semibold text-gray-900">{evidence.id}</span>
-                    <StatusBadge status={evidence.status} size="sm" />
+                    <StatusBadge color={evidence.status} size="sm" />
                   </div>
                   <p className="text-sm text-gray-600 mb-1">{evidence.title}</p>
                   <div className="flex items-center gap-2 text-xs text-gray-500">
@@ -255,7 +255,7 @@ export default function CaseDetail() {
             Add Person
           </button>
         </div>
-        
+
         {casePersons.length === 0 ? (
           <p className="text-gray-500 text-center py-8">No persons of interest added yet</p>
         ) : (
@@ -310,7 +310,7 @@ export default function CaseDetail() {
           <p className="text-sm text-gray-600">
             Select evidence items collected by field officers to attach to this case:
           </p>
-          
+
           {availableEvidence.length === 0 ? (
             <p className="text-center py-8 text-gray-500">No available evidence to attach</p>
           ) : (
@@ -342,7 +342,7 @@ export default function CaseDetail() {
               ))}
             </div>
           )}
-          
+
           <div className="flex gap-3 pt-4">
             <button
               onClick={() => {
@@ -393,7 +393,7 @@ export default function CaseDetail() {
               placeholder="Enter full name"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Date of Birth *
@@ -406,7 +406,7 @@ export default function CaseDetail() {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Role *
@@ -423,7 +423,7 @@ export default function CaseDetail() {
               <option value="Associate">Associate</option>
             </select>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Last Known Address
@@ -436,13 +436,13 @@ export default function CaseDetail() {
               placeholder="Enter address (optional)"
             />
           </div>
-          
+
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
             <p className="text-sm text-blue-800">
               <strong>Note:</strong> This person is not currently in the system. They will be added as a new entry.
             </p>
           </div>
-          
+
           <div className="flex gap-3 pt-4">
             <button
               type="button"

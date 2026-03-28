@@ -18,7 +18,7 @@ export default function EvidenceDetail({ evidence }: { evidence: any }) {
                                 <Hash className="w-4 h-4" /> {evidence.evidenceId} • Case: {evidence.caseId}
                             </p>
                         </div>
-                        <StatusBadge status={evidence.status} size="md" />
+                        <StatusBadge color={evidence.status} size="md" />
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-6 border-y border-gray-100">

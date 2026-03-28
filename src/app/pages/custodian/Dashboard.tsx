@@ -82,7 +82,7 @@ export default function CustodianDashboard() {
                     <div className="font-medium text-gray-900">{evidence.id}</div>
                     <div className="text-sm text-gray-600 mt-1">{evidence.title}</div>
                   </div>
-                  <StatusBadge status={evidence.status} />
+                  <StatusBadge color={evidence.status} />
                 </div>
                 <div className="text-xs text-gray-500 mt-2">
                   Submitted: {new Date(evidence.submittedDate).toLocaleDateString()}
@@ -138,7 +138,7 @@ export default function CustodianDashboard() {
                   <td className="px-4 py-3 text-sm text-gray-900">{transfer.evidenceId}</td>
                   <td className="px-4 py-3 text-sm text-gray-600">{transfer.fromLocation}</td>
                   <td className="px-4 py-3 text-sm text-gray-600">{transfer.toLocation}</td>
-                  <td className="px-4 py-3"><StatusBadge status={transfer.status} /></td>
+                  <td className="px-4 py-3"><StatusBadge color={transfer.status} /></td>
                   <td className="px-4 py-3 text-sm text-gray-600">
                     {new Date(transfer.requestedDate).toLocaleDateString()}
                   </td>

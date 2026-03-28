@@ -30,7 +30,7 @@ export default function Transfers() {
     {
       key: 'status',
       label: 'Status',
-      render: (item) => <StatusBadge status={item.status} />
+      render: (item) => <StatusBadge color={item.status} />
     },
     {
       key: 'requestedDate',

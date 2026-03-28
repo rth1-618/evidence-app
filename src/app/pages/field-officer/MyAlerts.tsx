@@ -20,7 +20,7 @@ export default function MyAlerts() {
     {
       key: 'status',
       label: 'Status',
-      render: (item) => <StatusBadge status={item.status} />
+      render: (item) => <StatusBadge color={item.status} />
     },
     {
       key: 'createdDate',
