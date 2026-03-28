@@ -7,6 +7,7 @@ import { Modal } from '../../components/ui/Modal';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from 'sonner';
+import { PrintSticker } from '../../components/core/PrintSticker';
 
 export default function StorageConfiguration() {
   const { user, isLoading: authLoading } = useAuth();
@@ -65,18 +66,7 @@ export default function StorageConfiguration() {
   return (
     <div className="space-y-6">
       {/* AWESOME PRINT STYLES */}
-      <style>{`
-        @media print {
-          @page { size: 4in 6.5in; margin: 0; }
-          body * { visibility: hidden; }
-          header, nav, aside, .tsqd-parent-container { display: none !important; }
-          .print-sticker, .print-sticker * { visibility: visible; }
-          .print-sticker {
-            position: absolute; left: 0; top: 0; width: 4in; height: auto;
-            border: 4px solid black; background: white; visibility: visible;
-          }
-        }
-      `}</style>
+
 
       {/* Page Header */}
       <div className="flex items-center justify-between print:hidden">
@@ -160,45 +150,14 @@ export default function StorageConfiguration() {
 
       {/* HIDDEN PRINT STICKER - Matches Evidence Bag Style */}
       {printingShelf && (
-        <div className="print-sticker hidden print:flex flex-col p-6 w-[4in] text-left">
-          <div className="border-b-[3px] border-black pb-4 mb-4 flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-black uppercase tracking-tighter leading-none">Storage</h1>
-              <p className="text-[10px] font-bold uppercase text-gray-600">Property & Evidence Division</p>
-            </div>
-            <ShieldCheck className="w-10 h-10 text-black" />
-          </div>
-
-          <div className="flex flex-col items-center justify-center mb-6 py-4 border-b-2 border-black border-dashed">
-            <div className="bg-white p-2 border border-black mb-2">
-              <QRCodeSVG value={printingShelf._id} size={180} level='H' marginSize={1} />
-            </div>
-            <p className="text-3xl font-mono font-black tracking-widest uppercase">{printingShelf.shelfId}</p>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <label className="block text-[10px] font-black uppercase text-gray-500">Location Section</label>
-              <p className="text-xl font-bold border-b border-black pb-1 uppercase">{printingShelf.section}</p>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-[10px] font-black uppercase text-gray-500">Total Capacity</label>
-                <p className="text-lg font-bold border-b border-black pb-1">{printingShelf.capacity} Units</p>
-              </div>
-              <div>
-                <label className="block text-[10px] font-black uppercase text-gray-500">Current Status</label>
-                <p className="text-lg font-bold border-b border-black pb-1 uppercase">{printingShelf.status}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-auto pt-8 text-center">
-            <p className="text-[9px] font-black uppercase border-2 border-black p-1">
-              Note: Scan to assign items to this shelf
-            </p>
-          </div>
-        </div>
+        <PrintSticker
+          type="STORAGE"
+          qrValue={printingShelf._id}
+          idDisplay={printingShelf.shelfId}
+          title={printingShelf.section}
+          secondaryId={printingShelf.capacity.toString()}
+          status={printingShelf.status}
+        />
       )}
 
       {/* Add Shelf Modal */}

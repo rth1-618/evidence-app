@@ -10,6 +10,7 @@ import { LiveMediaCapture } from '../../components/ui/LiveMediaCapture';
 import { MediaPreview } from '../../components/ui/MediaPreview';
 import { useNavigate } from 'react-router-dom';
 import { Printer } from 'lucide-react';
+import { PrintSticker } from '../../components/core/PrintSticker';
 
 export default function SubmitEvidence() {
 
@@ -242,130 +243,61 @@ export default function SubmitEvidence() {
     );
   }
 
-
   if (submitted) {
     return (
-      <>
-        <style>
-          {`
-    @media print {
-      @page {
-        size: 4in 7in; /* Matches the sticker dimensions */
-        margin: 0;      /* Removes browser headers/footers */
-      }
-        /* 1. Hide everything by default */
-      body * {
-        visibility: hidden;
-      }
-      /* 2. Show only the sticker and its children */
-      .print-sticker, .print-sticker * {
-        visibility: visible;
-      }
-      /* 3. Position the sticker at the top-left of the print page */
-      .print-sticker {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 4in;
-        page-break-inside: avoid; 
-        break-inside: avoid;
-        height: auto; /* Height adapts to your text */
-        border: 4px solid black;
-        visibility: visible;
-        
-      }
-    }
-  `}
-        </style>
-        <div className="max-w-2xl mx-auto print:max-w-none print:m-0">
-          <div className="bg-white rounded-lg border border-gray-200 p-8 text-center print:border-none print:p-0">
+      <div className="max-w-2xl mx-auto print:max-w-none print:m-0">
+        <div className="bg-white rounded-lg border border-gray-200 p-8 text-center print:border-none print:p-0">
 
-            {/* Header - Hidden on Print */}
-            <div className="print:hidden">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-10 h-10 text-green-600" />
-              </div>
-              <h2 className="text-2xl font-semibold text-gray-900 mb-2">Evidence Secured</h2>
-              <p className="text-gray-600 mb-6">The digital record has been successfully hashed and stored.</p>
+          {/* Your success messageand buttons here */}
+
+          {/* Header - Hidden on Print */}
+          <div className="print:hidden">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="w-10 h-10 text-green-600" />
             </div>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">Evidence Secured</h2>
+            <p className="text-gray-600 mb-6">The digital record has been successfully hashed and stored.</p>
+          </div>
 
-            {/* --- EVIDENCE BAG STICKER (Visible on Print) --- */}
-            <div className="mx-auto print:block bg-white border-[4px] border-black p-6 w-full print-sticker max-w-md print:max-w-[4in] print:h-[6in] flex flex-col text-left">
-              {/* Sticker Header */}
-              <div className="border-b-[3px] border-black pb-4 mb-4 flex justify-between items-center">
-                <div>
-                  <h1 className="text-2xl font-black uppercase tracking-tighter leading-none">Evidence</h1>
-                  <p className="text-[10px] font-bold uppercase text-gray-600">Property & Evidence Division</p>
-                </div>
-                <ShieldCheck className="w-10 h-10 text-black" />
-              </div>
+          {/* THE UNIFIED TAG */}
+          <PrintSticker
+            type="EVIDENCE"
+            qrValue={qrCode}
+            idDisplay={qrCode}
+            title={formData.title}
+            caseId={formData.caseId}
+            secondaryId={user?.badge}
+            showInComponent={true}
+          />
 
-              {/* QR & ID Section */}
-              <div className="flex flex-col items-center justify-center mb-6 py-4 border-b-2 border-black border-dashed">
-                <div className="bg-white p-2 border border-gray-200 mb-2">
-                  <QRCodeSVG value={qrCode} size={180} level='H' marginSize={1} />
-                </div>
-                <p className="text-3xl font-mono font-black tracking-widest">{qrCode}</p>
-              </div>
-
-              {/* Forensic Details */}
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-[10px] font-black uppercase text-gray-500">Evidence Title</label>
-                  <p className="text-lg font-bold border-b border-black pb-1 leading-tight">{formData.title}</p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-[10px] font-black uppercase text-gray-500">Officer Badge #</label>
-                    <p className="text-lg font-bold border-b border-black pb-1">{user?.badge || 'N/A'}</p>
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-black uppercase text-gray-500">Case ID</label>
-                    <p className="text-lg font-bold border-b border-black pb-1">{formData.caseId}</p>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-[10px] font-black uppercase text-gray-500">Submission Date</label>
-                  <p className="text-sm font-bold border-b border-black pb-1">{new Date().toLocaleString()}</p>
-                </div>
-              </div>
-
-              {/* Footer Warning */}
-              <div className="mt-auto pt-4 text-center">
-                <p className="text-[9px] font-black uppercase leading-none border-2 border-black p-1">
-                  Warning: Tampering is a criminal offense
-                </p>
-              </div>
-            </div>
-
-            {/* Action Buttons - Hidden on Print */}
-            <div className="mt-8 space-y-3 print:hidden">
-              <button
-                onClick={() => window.print()}
-                className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 shadow-lg shadow-green-100 transition-all active:scale-95"
-              >
-                <Printer className="w-5 h-5" /> Generate Bag Sticker
-              </button>
-              <button
-                onClick={handleReset}
-                className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Submit Another Evidence
-              </button>
-              <button
-                onClick={() => navigate('/field-officer/dashboard')}
-                className="w-full px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Return to Dashboard
-              </button>
-            </div>
+          {/* Action Buttons - Hidden on Print */}
+          <div className="mt-8 space-y-3 print:hidden">
+            <button
+              onClick={() => window.print()}
+              className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 shadow-lg shadow-green-100 transition-all active:scale-95"
+            >
+              <Printer className="w-5 h-5" /> Generate Bag Sticker
+            </button>
+            <button
+              onClick={handleReset}
+              className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Submit Another Evidence
+            </button>
+            <button
+              onClick={() => navigate('/field-officer/dashboard')}
+              className="w-full px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              Return to Dashboard
+            </button>
           </div>
         </div>
-      </>
+
+
+      </div>
     );
   }
+
 
   return (
     <>
