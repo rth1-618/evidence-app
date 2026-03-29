@@ -10,6 +10,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from 'sonner';
 import { types } from 'node:util';
+import { stat } from 'node:fs';
 
 
 export default function MyCases() {
@@ -136,6 +137,15 @@ export default function MyCases() {
           setSelectedCase(item.evidenceId);
           setShowAddEvidence(true);
           // change status to verified in database
+          api.put(`/cases/verify`, { id: item.evidenceId})
+            .then(() => {
+              toast.success('Evidence verified successfully');
+              refetchEvidence(); // Refresh the evidence list after verification
+            })
+            .catch((error) => {
+              console.error('Error verifying evidence:', error);
+              toast.error('Failed to verify evidence');
+            });
         }}
         className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
       >
