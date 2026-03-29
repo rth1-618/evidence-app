@@ -18,6 +18,7 @@ export default function EvidenceDetail({ evidence }: { evidence: any }) {
                 idDisplay={evidence.evidenceId}
                 title={evidence.title}
                 caseId={evidence.caseId}
+                submittedAt={new Date(evidence.submittedDate).toLocaleString()}
                 secondaryId={evidence.submittedByBadge}
             />
 
@@ -88,7 +89,7 @@ export default function EvidenceDetail({ evidence }: { evidence: any }) {
                             <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Primary SHA256 Fingerprint</p>
                             <div className="bg-black/50 p-3 rounded border border-white/10">
                                 <code className="text-[10px] text-blue-400 break-all leading-tight">
-                                    {evidence.fileHashes?.[0]?.hash || "Verification Pending..."}
+                                    To be implemented in next Version
                                 </code>
                             </div>
                         </div>

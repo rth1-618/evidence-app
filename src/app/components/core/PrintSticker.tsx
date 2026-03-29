@@ -10,6 +10,7 @@ interface PrintStickerProps {
     secondaryId?: string;
     status?: string;
     showInComponent?: boolean;
+    submittedAt?: string;
     type: 'EVIDENCE' | 'STORAGE';
 }
 
@@ -20,62 +21,71 @@ export const PrintSticker = ({
     caseId,
     secondaryId,
     status,
+    submittedAt,
     showInComponent = false,
     type
 }: PrintStickerProps) => {
+    const isEvidence = () => type === 'EVIDENCE';
     return (
         <>
-            <style>
-                {`
-                @media print {
-                    @page {
-                        size: 4in 7in;
-                        margin: 0 !important;
-                    }
+            {
+                <style>
+                    {`
+                        @media print {
+                            @page {
+                                size: 4in 7in;
+                                margin: 0 !important;
+                            }
 
-                    /* 1. Hide everything else on the page */
-                    body > * {
-                        visibility: hidden !important;
-                    }
+                            /* 1. Hide everything else on the page */
+                            body > * {
+                                visibility: hidden !important;
+                            }
 
-                    /* 2. Isolate and show ONLY the sticker */
-                    .print-sticker-container,
-                    .print-sticker-container * {
-                        visibility: visible !important;
-                    }
+                            /* 2. Isolate and show ONLY the sticker */
+                            .print-sticker-container,
+                            .print-sticker-container * {
+                                visibility: visible !important;
+                            }
 
-                    .print-sticker-container {
-                        position: fixed !important;
-                        top: 0 !important;
-                        left: 0 !important;
-                        width: 4in !important;
-                        height: 7in !important;
-                        margin: 0 !important;
-                        padding: 0 !important;
-                        background: white !important; /* Covers background ghosts */
-                        z-index: 99999;
-                    }
+                            .print-sticker-container {
+                                position: fixed !important;
+                                top: 0 !important;
+                                left: 0 !important;
+                                width: 4in !important;
+                                height: 7in !important;
+                                margin: 0 !important;
+                                padding: 0 !important;
+                                background: white !important; /* Covers background ghosts */
+                                z-index: 99999;
 
-                    .print-sticker {
-                        width: 4in !important;
-                        height: 7in !important;
-                        margin: 0 !important;
-                        padding: 1.5rem !important;
-                        box-sizing: border-box !important;
-                        border: 4px solid black !important;
-                        display: flex !important;
-                        flex-direction: column !important;
-                        page-break-after: avoid !important;
-                    }
-                    
-                    /* Fix for potential second blank page */
-                    html, body {
-                        height: 7in !important;
-                        overflow: hidden !important;
-                    }
-                }
-                `}
-            </style>
+
+                            }
+
+                            .print-sticker {
+                                width: 4in !important;
+                                height: 7in !important;
+                                margin: 0 !important;
+                                padding: 1.5rem !important;
+                                box-sizing: border-box !important;
+                                border: 4px solid black !important;
+                                display: flex !important;
+                                flex-direction: column !important;
+                                page-break-after: avoid !important;
+                            }
+
+                            /* Fix for potential second blank page */
+                            html, body {
+                                height: 7in !important;
+                                overflow: hidden !important;
+                            }
+                        }
+                        `}
+                </style>
+            }
+
+
+
 
             <div className={`${showInComponent ? "" : "hidden"} print:block print-sticker-container max-w-2xl mx-auto`}>
                 <div className="mx-auto print:block bg-white border-[4px] border-black p-6 w-full print-sticker max-w-md print:max-w-[4in] print:h-[6in] flex flex-col text-left">
@@ -84,7 +94,7 @@ export const PrintSticker = ({
                     <div className="border-b-[3px] border-black pb-4 mb-4 flex justify-between items-center">
                         <div>
                             <h1 className="text-2xl font-black uppercase tracking-tighter leading-none">
-                                {type === 'EVIDENCE' ? 'Evidence' : 'Storage Tag'}
+                                {isEvidence() ? 'Evidence' : 'Storage Tag'}
                             </h1>
                             <p className="text-[10px] font-bold uppercase text-gray-600">Property & Evidence Division</p>
                         </div>
@@ -103,7 +113,7 @@ export const PrintSticker = ({
                     <div className="space-y-4">
                         <div>
                             <label className="block text-[10px] font-black uppercase text-gray-500">
-                                {type === 'EVIDENCE' ? 'Evidence Title' : 'Location Section'}
+                                {isEvidence() ? 'Evidence Title' : 'Location Section'}
                             </label>
                             <p className="text-lg font-bold border-b border-black pb-1 leading-tight">{title}</p>
                         </div>
@@ -111,7 +121,7 @@ export const PrintSticker = ({
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-[10px] font-black uppercase text-gray-500">
-                                    {type === 'EVIDENCE' ? 'Officer Badge #' : 'Total Capacity'}
+                                    {isEvidence() ? 'Officer Badge #' : 'Total Capacity'}
                                 </label>
                                 <p className="text-lg font-bold border-b border-black pb-1 uppercase">
                                     {secondaryId || 'N/A'} {type === 'STORAGE' ? 'Units' : ''}
@@ -119,22 +129,25 @@ export const PrintSticker = ({
                             </div>
                             <div>
                                 <label className="block text-[10px] font-black uppercase text-gray-500">
-                                    {type === 'EVIDENCE' ? 'Case ID' : 'Current Status'}
+                                    {isEvidence() ? 'Case ID' : 'Current Status'}
                                 </label>
                                 <p className="text-lg font-bold border-b border-black pb-1 uppercase">{caseId || status}</p>
                             </div>
                         </div>
 
                         <div>
-                            <label className="block text-[10px] font-black uppercase text-gray-500">Timestamp</label>
-                            <p className="text-sm font-bold border-b border-black pb-1">{new Date().toLocaleString()}</p>
+                            <label className="block text-[10px] font-black uppercase text-gray-500">
+                                {isEvidence() && submittedAt ? 'Submission Time' : 'Timestamp'}
+
+                            </label>
+                            <p className="text-sm font-bold border-b border-black pb-1">{isEvidence() && submittedAt ? submittedAt : new Date().toLocaleString()}</p>
                         </div>
                     </div>
 
                     {/* Original Footer Design */}
                     <div className="mt-auto pt-4 text-center">
                         <p className="text-[9px] font-black uppercase border-2 border-black p-1">
-                            {type === 'EVIDENCE'
+                            {isEvidence()
                                 ? 'Warning: Tampering is a criminal offence'
                                 : 'Note: Scan to assign items to this shelf'}
                         </p>

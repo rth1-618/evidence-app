@@ -35,6 +35,7 @@ export default function SubmitEvidence() {
   const [isDragging, setIsDragging] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [qrCode, setQrCode] = useState('');
+  const [submittedEvidence, setSubmittedEvidence] = useState<any>({});
   const [files, setFiles] = useState<File[]>([]);
   const [activeRecorder, setActiveRecorder] = useState<'img' | 'video' | 'voiceNote' | null>(null);
   const [isLocating, setIsLocating] = useState(true);
@@ -191,6 +192,7 @@ export default function SubmitEvidence() {
         toast.success('Evidence secured and uploaded!', { id: loadingId });
         setSubmitted(true);
         setQrCode(result.data.evidenceId);
+        setSubmittedEvidence(result.data)
 
       }
     } catch (error: any) {
@@ -267,6 +269,7 @@ export default function SubmitEvidence() {
             title={formData.title}
             caseId={formData.caseId}
             secondaryId={user?.badge}
+            submittedAt={new Date(submittedEvidence.submittedDate).toLocaleString()}
             showInComponent={true}
           />
 
