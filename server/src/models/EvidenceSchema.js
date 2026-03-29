@@ -22,6 +22,7 @@ const evidenceSchema = new mongoose.Schema({
   voiceNote: [{ type: String }],
   video: [{ type: String }],
 
+
   status: {
     type: String,
     enum: ['active', 'pending', 'in-lab', 'disposed'],
@@ -42,6 +43,7 @@ const evidenceSchema = new mongoose.Schema({
 
   // Metadata
   submittedBy: { type: String, required: true }, // User ID or Name
+  submittedByBadge: { type: String, required: true },
   investigatorIds: [{ type: String }],
   submittedDate: { type: String, default: () => new Date().toISOString() },
 

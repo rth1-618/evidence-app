@@ -84,6 +84,7 @@ export const submitEvidence = async (req, res) => {
       voiceNote: getUrls('voiceNote'),
       video: getUrls('video'),
       submittedBy: req.user._id, // From your 'protect' middleware
+      submittedByBadge: req.user.badge,
       status: 'pending',
       submittedDate: new Date().toISOString()
     });

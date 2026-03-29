@@ -6,25 +6,13 @@ import { DataTable, Column } from '../../components/ui/DataTable';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { FileSearch, ArrowLeft } from 'lucide-react';
 import EvidenceDetail from './EvidenceDetail'; // We'll create this next
+import { useEvidence } from '../../hooks/useEvidence';
 
 
 export default function MyEvidences() {
-    const { user, isLoading: authLoading } = useAuth();
     const [selectedEvidenceId, setSelectedEvidenceId] = useState<string | null>(null);
-    console.log("Current User:", user); // Check if this is null
-    console.log("Auth Loading:", authLoading);
 
-    // 1. Fetch evidence from your MERN backend
-    const { data: evidenceList = [], isLoading } = useQuery({
-        queryKey: ['my-evidence', user?.id],
-        queryFn: async () => {
-            const res = await api.get('/evidence/my-submissions');
-            console.log('res:', res);
-
-            return res.data.data;
-        },
-        enabled: !!user?.id
-    });
+    const { myEvidenceList } = useEvidence();
 
     // 2. Define Table Columns
     const columns: Column<any>[] = [
@@ -46,7 +34,7 @@ export default function MyEvidences() {
 
     // If a row is clicked, show the detail view
     if (selectedEvidenceId) {
-        const selectedData = evidenceList.find((e: any) => e._id === selectedEvidenceId);
+        const selectedData = myEvidenceList.find((e: any) => e._id === selectedEvidenceId);
         return (
             <div className="space-y-6">
                 <button
@@ -68,7 +56,7 @@ export default function MyEvidences() {
             </div>
 
             <DataTable
-                data={evidenceList}
+                data={myEvidenceList}
                 columns={columns}
                 onRowClick={(row) => setSelectedEvidenceId(row._id)}
                 searchPlaceholder="Search by ID, Title or Case..."
