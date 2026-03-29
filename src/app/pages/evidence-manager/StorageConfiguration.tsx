@@ -65,13 +65,18 @@ export default function StorageConfiguration() {
               render: (item) => new Date(item.createdDate).toLocaleDateString()
           }
       ];
-      const handleGenerateQR = (shelfId: string) => {
-        toast.success(`QR code generated for ${shelfId}`);
-      };
+      //const handleGenerateQR = (shelfId: string) => {
+      //  toast.success(`QR code generated for ${shelfId}`);
+      //};
 
       const handlePrintQR = (shelfId: string) => {
-
-
+        const printContents = document.getElementById('print-content')?.innerHTML;
+        const originalContents = document.body.innerHTML;
+        if (!printContents) return;
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+        
         toast.success(`Printing QR code for ${shelfId}`);
       };
       //const [uploadstatus, setUploadstatus] = useState({shelfId: '',newStatus: ''});
@@ -103,7 +108,7 @@ export default function StorageConfiguration() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" ref={componentRef}>
+      <div id="print-content" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" ref={componentRef}>
         {shelfList.map((shelf: any) => (
           <div key={shelf._id} className="bg-white rounded-lg border border-gray-200 p-6">
             <div className="flex items-start justify-between mb-4">
@@ -145,14 +150,7 @@ export default function StorageConfiguration() {
                 <Printer className="w-4 h-4" />
                 Print
               </button>
-              <button
-                onClick={() => handleGenerateQR(shelf._id) }
-                className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
-              >
-                Regenerate
-              </button>
-            </div>
-            <div className="space-y-2 mb-4 mt-4">
+
               <button
                 onClick={() => {
                   changeShelfStatus({ shelfId: shelf.shelfId, newStatus: 'Deactivate' });
@@ -162,7 +160,10 @@ export default function StorageConfiguration() {
                 Deactivate
               </button>
             </div>
-
+           < div className="flex justify-between text-sm">
+                <span className="text-gray-600">Last Updated:</span>
+                <span className="font-medium text-gray-900">{shelf.updatedAt}</span>
+              </div>
           </div>
         ))}
       </div>
@@ -223,6 +224,5 @@ export default function StorageConfiguration() {
   );
   }
 }  // 如果點擊行，顯示詳細視圖 If a row is clicked, show the detail view
-
 
 

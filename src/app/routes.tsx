@@ -16,7 +16,7 @@ import CustodyRecords from './pages/custodian/CustodyRecords';
 
 // Investigator
 import InvestigatorDashboard from './pages/investigator/Dashboard';
-import Cases from './pages/investigator/Cases';
+import Cases from './pages/investigator/MyCases';
 import CaseDetail from './pages/investigator/CaseDetail';
 import EvidenceMap from './pages/investigator/EvidenceMap';
 import LabRequests from './pages/investigator/LabRequests';
