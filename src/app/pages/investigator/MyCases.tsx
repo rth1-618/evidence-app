@@ -26,7 +26,7 @@ export default function MyCases() {
     name: '',
     dob: '',
     role: '',
-    address: ''
+    contract: ''
   });
 
     if (authLoading) {
@@ -36,10 +36,11 @@ export default function MyCases() {
       return <div>Unauthorized</div>;
     }
     else {
+      /**Case Management */
       //add case
       const [showAddModal, setShowAddModal] = useState(false);
-        const [newCase, setNewCase] = useState({ caseId: '', title: '', types:'',status: 'active',investigatorId: user.id } );
-        const handleAddCase = async () => {
+      const [newCase, setNewCase] = useState({ caseId: '', title: '', types:'',status: 'active',investigatorId: user.id } );
+      const handleAddCase = async () => {
           try {
             console.log('case:', newCase);
             const res = await api.post('/cases/addcase', newCase);
@@ -85,6 +86,15 @@ export default function MyCases() {
       render: (item) => new Date(item.createdAt).toLocaleDateString()
     }
   ];
+  const handleCaseClick = (caseItem: typeof caseList[0]) => {
+      setSelectedCase(caseItem.caseId);
+    };
+  const selectedCaseData = caseList.find((c: typeof caseList[0]) => c.caseId === selectedCase);
+  console.log('Selected Case Data:', selectedCaseData); // Check if this is undefined
+
+
+
+  /* Evidence Management */
   // list evidence only active ==pending for verification
   const { data: evidenceData = [], isLoading: evidenceLoading, refetch: refetchEvidence } = useQuery({
             queryKey: ['evidence', user?.id],
@@ -123,21 +133,49 @@ export default function MyCases() {
   ];
 
   //selected case detail from database Fetch selected case detail from database
-  const handleCaseClick = (caseItem: typeof caseList[0]) => {
-    setSelectedCase(caseItem.caseId);
+  const handleEvidenceClick = (evidenceItem: typeof evidenceData[0]) => {
+    setSelectedCase(evidenceItem.evidenceId);
   };
+  //setSelectedEvidence(evidenceItem.evidenceId);
 
-  const handleAddPOI = () => {
-    // Handle form submission
-    console.log('Adding POI:', poiForm);
-    setShowAddPOI(false);
-    setPoiForm({ name: '', dob: '', role: '', address: '' });
-  };
+  const { data: poiData = [], isLoading: poiLoading, refetch: refetchPoi } = useQuery({           
+            queryKey: ['pois', user?.id, selectedCase],
+            queryFn: async () => {
+              console.log('Fetching POIs for investigatorId:', user.id, 'and caseId:', selectedCase);
+              const res = await api.get('/cases/pois',{ params: { investigatorId: user.id, caseId: selectedCase } });
+              console.log('pois', res);
+              setShowAddEvidence(false);    
+              return res.data.data;
+            }, 
+            enabled: !!user?.id  && !!selectedCase
+      });
+/* Persons of Interest Management */
+  const handleAddPOI = async () => {
+          try {
+            console.log('case:', poiForm);
+            const res = await api.post('/cases/addPOI', { ...poiForm, caseId: selectedCase, investigatorId: user.id });
+            toast.success('POI added successfully');
+            setShowAddPOI(false);
+            refetch();
+            // After adding a new case, refetch the case list to show the updated data
+            refetch();
+          } catch (error) {
+            console.error('Error adding case:', error);
+            toast.error('Failed to add case');
+          }
+        };
 
-  const selectedCaseData = caseList.find((c: typeof caseList[0]) => c.caseId === selectedCase);
-  console.log('Selected Case Data:', selectedCaseData); // Check if this is undefined
+  const poiColumns: Column<typeof poiData[0]>[] = [
+    {key: '_id', label: 'POI ID', sortable: true },
+    {key: 'name', label: 'Name', sortable: true },
+    {key: 'caseId', label: 'Case ID', sortable: true },
+    { key: 'dob', label: 'Date of Birth', sortable: true, render: (item) => new Date(item.dob).toLocaleDateString() },
+    { key: 'role', label: 'Role in Case', sortable: true },
+    { key: 'lastKnownLocation', label: 'Last Known Location', sortable: false }
+  ];
+  
   const caseEvidence = caseList.filter((e: typeof caseList[0]) => e.caseId === selectedCase);
-  const casePOIs = caseList.filter(p => p.caseId === selectedCase);
+  const casePOIs = poiData.filter((p: typeof poiData[0]) => p.caseId === selectedCase);
 
   return (
     <div className="space-y-6">
@@ -329,8 +367,8 @@ export default function MyCases() {
             </div>
             {casePOIs.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {casePOIs.map((poi) => (
-                  <div key={poi.id} className="p-4 border border-gray-200 rounded-lg">
+                {casePOIs.map((poi: typeof poiData[0]) => (
+                  <div key={poi._id} className="p-4 border border-gray-200 rounded-lg">
                     <div className="flex items-start gap-3">
                       <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
                         <User className="w-6 h-6 text-gray-600" />
@@ -339,12 +377,6 @@ export default function MyCases() {
                         <div className="font-medium text-gray-900">{poi.name}</div>
                         <div className="text-sm text-gray-600">Role: {poi.role}</div>
                         <div className="text-xs text-gray-500 mt-1">DOB: {new Date(poi.dob).toLocaleDateString()}</div>
-                        {poi.lastKnownLocation && (
-                          <div className="flex items-center gap-1 text-xs text-gray-500 mt-2">
-                            <MapPin className="w-3 h-3" />
-                            {poi.lastKnownLocation.address}
-                          </div>
-                        )}
                       </div>
                     </div>
                   </div>
@@ -413,9 +445,9 @@ export default function MyCases() {
             </label>
             <input
               type="text"
-              value={poiForm.address}
-              onChange={(e) => setPoiForm({ ...poiForm, address: e.target.value })}
-              placeholder="Enter address"
+              value={poiForm.contract}
+              onChange={(e) => setPoiForm({ ...poiForm, contract: e.target.value })}
+              placeholder="Enter contact information"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
