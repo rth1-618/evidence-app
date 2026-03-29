@@ -129,7 +129,20 @@ export default function MyCases() {
       key: 'storedAt',
       label: 'Location',
       render: (item) => item.storedAt || 'N/A'
-    }
+    },
+    {key:'verify', label: 'Action', render: (item) => (
+      <button
+        onClick={() => {
+          setSelectedCase(item.evidenceId);
+          setShowAddEvidence(true);
+          // change status to verified in database
+        }}
+        className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
+      >
+        Verify
+      </button>
+    )}
+
   ];
 
   //selected case detail from database Fetch selected case detail from database
@@ -349,7 +362,7 @@ export default function MyCases() {
                 onRowClick={handleCaseClick}
                 searchPlaceholder="Search cases..."
                 emptyMessage="No cases assigned to you"
-              /> 
+              />
             </div>
               </Modal>
 
