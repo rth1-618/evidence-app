@@ -103,13 +103,17 @@ export default function MyCases() {
               const res = await api.get('/evidence');
               setShowAddEvidence(false);    
               // Filter evidence to only include those with status 'pending' and investigatorId matching the current user
-              const filteredEvidence = res.data.data.filter((e: any) => e.status === 'pending');
-              console.log('Filtered Evidence:', filteredEvidence); 
-              return filteredEvidence;
+             // const filteredEvidence = res.data.data.filter((e: any) => e.status === 'pending');
+              //console.log('Filtered Evidence:', filteredEvidence); 
+              return res.data.data;
             }, 
             enabled: !!user?.id
       });
     
+  // fliter only pending evidence and caseId match selected case
+  const caseEvidence = evidenceData.filter((e: any) => e.caseId === selectedCase);
+  const filteredEvidence = evidenceData.filter((e: any) => e.status === 'pending' );
+  console.log('Filtered Evidence for Selected Case:', filteredEvidence); // Check if this is empty or contains the expected evidence items
 
   const evidenceColumns: Column<typeof evidenceData[0]>[] = [
     { key: 'evidenceId', label: 'Evidence ID', sortable: true },
@@ -133,19 +137,20 @@ export default function MyCases() {
     },
     {key:'verify', label: 'Action', render: (item) => (
       <button
-        onClick={() => {
-          setSelectedCase(item.evidenceId);
-          setShowAddEvidence(true);
+        onClick={async () => {
+          //setSelectedCase(item.caseId);
+          //setShowAddEvidence(true);
           // change status to verified in database
-          api.put(`/cases/verify`, { id: item.evidenceId})
-            .then(() => {
-              toast.success('Evidence verified successfully');
-              refetchEvidence(); // Refresh the evidence list after verification
-            })
-            .catch((error) => {
-              console.error('Error verifying evidence:', error);
-              toast.error('Failed to verify evidence');
-            });
+          try {
+            const res = await api.post(`/cases/verify`, { id: item.evidenceId, caseId: item.caseId });
+            toast.success('Evidence verified successfully');
+            setShowAddEvidence(true);
+            console.log('Verification Response:', res);
+            //refetchEvidence(); // Refresh the evidence list after verification
+          } catch (error) {
+            console.error('Error verifying evidence:', error);
+            toast.error('Failed to verify evidence');
+          }
         }}
         className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
       >
@@ -197,7 +202,7 @@ export default function MyCases() {
     { key: 'lastKnownLocation', label: 'Last Known Location', sortable: false }
   ];
   
-  const caseEvidence = caseList.filter((e: typeof caseList[0]) => e.caseId === selectedCase);
+  const caseEvidenceA = caseList.filter((e: typeof caseList[0]) => e.caseId === selectedCase && e.status === 'Active');
   const casePOIs = poiData.filter((p: typeof poiData[0]) => p.caseId === selectedCase);
 
   return (
@@ -330,7 +335,7 @@ export default function MyCases() {
             </div>
             {caseEvidence.length > 0 ? (
               <div className="space-y-3">
-                {caseEvidence.map((evidence: typeof evidenceData[0]) => (
+                {caseEvidence.map((evidence: typeof caseEvidence[0]) => (
                   <div key={evidence.id} className="p-4 border border-gray-200 rounded-lg">
                     <div className="flex items-start justify-between mb-2">
                       <div>
@@ -367,9 +372,8 @@ export default function MyCases() {
             <div className="text-center py-8 text-gray-500">
               {/*select evedience by field officer and verify it here */}
               <DataTable
-                data={evidenceData}
+                data={filteredEvidence}
                 columns={evidenceColumns}
-                onRowClick={handleCaseClick}
                 searchPlaceholder="Search cases..."
                 emptyMessage="No cases assigned to you"
               />

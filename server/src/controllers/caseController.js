@@ -1,7 +1,7 @@
 import { timeStamp } from 'node:console';
 import Case from '../models/CaseSchema.js';
 import POI from '../models/poiSchema.js';
-import evidence from '../models/EvidenceSchema.js';
+import Evidence from '../models/EvidenceSchema.js';
 // get all cases
 export const getCases = async (req, res) => {
   try {
@@ -127,13 +127,16 @@ export const newPOI = async (req, res) => {
 //update evidence status
 export const verifyEvidence = async (req, res) => {
   try {
-    const { id } = req.body;
+    const evidenceId  = req.body.id;
+    const caseId = req.body.caseId;
+    console.log("Received evidenceId for verification:", evidenceId);
 
-    const updatedEvidence = await evidence.findByIdAndUpdate(
-      id,
-      { status: 'verified' },
-      { new: true }
+    const updatedEvidence = await Evidence.findOneAndUpdate(
+      { evidenceId,caseId },
+      { status: 'active' },
+      { returnDocument: 'after' }
     );
+    console.log("updatedEvidence:", updatedEvidence);
 
     res.status(200).json({
       success: true,
