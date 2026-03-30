@@ -31,7 +31,7 @@ export default function EvidenceMap() {
                   <div className="font-semibold">{evidence.id}</div>
                   <div className="text-sm text-gray-600">{evidence.title}</div>
                   <div className="mt-2">
-                    <StatusBadge status={evidence.status} size="sm" />
+                    <StatusBadge color={evidence.status} size="sm" />
                   </div>
                   <div className="text-xs text-gray-500 mt-2">
                     {evidence.locationFound.address}

@@ -19,7 +19,7 @@ export default function Cases() {
     {
       key: 'status',
       label: 'Status',
-      render: (item) => <StatusBadge status={item.status} />
+      render: (item) => <StatusBadge color={item.status} />
     },
     {
       key: 'lastModified',

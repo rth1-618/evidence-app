@@ -14,9 +14,12 @@ const shelfSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    occupied: {
+        type: Number
+    },
     status: {
         type: String,
-        enum: ['active', 'deactive'],
+        enum: ['active', 'inactive'],
         default: 'active'
     }
 }, {

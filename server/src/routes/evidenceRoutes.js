@@ -38,6 +38,4 @@ router.post(
   submitEvidence
 );
 
-
-
 export default router;

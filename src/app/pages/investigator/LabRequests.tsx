@@ -14,7 +14,7 @@ export default function LabRequests() {
       label: 'Status',
       render: (item) => {
         const isOverdue = item.status === 'in-lab' && new Date(item.dueDate) < new Date();
-        return <StatusBadge status={isOverdue ? 'overdue' : item.status} />;
+        return <StatusBadge color={isOverdue ? 'overdue' : item.status} />;
       }
     },
     {

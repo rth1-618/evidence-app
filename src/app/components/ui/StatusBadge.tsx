@@ -1,11 +1,13 @@
 import React from 'react';
 
 interface StatusBadgeProps {
-  status: 'active' | 'pending' | 'completed' | 'overdue' | 'open' | 'closed' | 'in-lab' | 'disposed' | 'approved' | 'in-transit' | 'inactive' | 'returned';
+  color: 'active' | 'pending' | 'completed' | 'overdue' | 'open' | 'closed' | 'in-lab' | 'disposed' | 'approved' | 'in-transit' | 'inactive' | 'returned';
   size?: 'sm' | 'md';
+  status?: string;
 }
 
-export function StatusBadge({ status, size = 'sm' }: StatusBadgeProps) {
+export function StatusBadge({ color, status = color.toString(), size = 'sm' }: StatusBadgeProps) {
+  // if (!status) status = color;
   const colors: Record<string, string> = {
     completed: 'bg-green-100 text-green-800 border-green-200',
     active: 'bg-blue-100 text-blue-800 border-blue-200',
@@ -24,7 +26,7 @@ export function StatusBadge({ status, size = 'sm' }: StatusBadgeProps) {
   const sizeClass = size === 'sm' ? 'px-2 py-0.5 text-xs' : 'px-3 py-1 text-sm';
 
   return (
-    <span className={`inline-flex items-center rounded border ${colors[status]} ${sizeClass}`}>
+    <span className={`inline-flex items-center rounded border ${colors[color]} ${sizeClass}`}>
       {status.charAt(0).toUpperCase() + status.slice(1).replace('-', ' ')}
     </span>
   );

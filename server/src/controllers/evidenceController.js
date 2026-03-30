@@ -13,7 +13,7 @@ export const getAllEvidence = async (req, res) => {
 
 export const getEvidenceById = async (req, res) => {
   try {
-    const item = await Evidence.findOne({ id: req.params.id });
+    const item = await Evidence.findOne({ evidenceId: req.params.id });
     if (!item) return res.status(404).json({ success: false, message: 'Not found' });
     res.status(200).json({ success: true, data: item });
   } catch (error) {
@@ -84,6 +84,7 @@ export const submitEvidence = async (req, res) => {
       voiceNote: getUrls('voiceNote'),
       video: getUrls('video'),
       submittedBy: req.user._id, // From your 'protect' middleware
+      submittedByBadge: req.user.badge,
       status: 'pending',
       submittedDate: new Date().toISOString()
     });
