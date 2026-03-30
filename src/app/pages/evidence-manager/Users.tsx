@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { use, useState } from 'react';
 // import { mockSystemUsers } from '../../utils/mockData';
 import { DataTable, Column } from '../../components/ui/DataTable';
 import { StatusBadge } from '../../components/ui/StatusBadge';
@@ -7,11 +7,13 @@ import { Plus, Power } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUsers } from '../../hooks/useUsers';
 import { IUser } from '../../interfaces/IUser';
+import api from '../../api/axios';
 
 export default function Users() {
   const { users, isLoading, createUser } = useUsers();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newUser, setNewUser] = useState({ name: '', email: '', role: '' as any, badge: '', password: '' } as IUser);
+                  
 
   const userColumns: Column<IUser>[] = [
     { key: 'badge', label: 'Badge', sortable: true },
@@ -28,8 +30,37 @@ export default function Users() {
       label: 'Created',
       sortable: true,
       render: (item) => new Date(item.createdAt as any).toLocaleDateString()
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      render: (item) => (
+        item.role !== 'EVIDENCE_MANAGER' ? (
+          <button
+            // onclick show confirm dialog to confirm status change, then call handleToggleStatus if confirmed
+            onClick={() => {
+              if (window.confirm(`Are you sure you want to ${item.status === 'active' ? 'deactivate' : 'activate'} user ${item.name}?`)) {
+                handleToggleStatus(item);
+              }
+            }}
+            className="flex items-center gap-1 px-3 py-1 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+            <Power className="w-4 h-4" />
+            {item.status === 'active' ? 'Deactivate' : 'Activate'}
+          </button>
+        ) : null
+      )
     }
   ];
+  const handleToggleStatus = async (user: IUser) => {
+    const newStatus = user.status === 'active' ? 'inactive' : 'active';
+    try {
+      await api.put(`/users/status`, {id: user._id, status: newStatus });
+      toast.success(`User ${user.name} is now ${newStatus}`);
+    } catch (error) {
+      console.error('Error updating user status:', error);
+      toast.error('Failed to update user status');
+    }
+  };
   const handleCreateUser = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // console.log("Submitting Payload:", newUser);
