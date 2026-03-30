@@ -2,7 +2,7 @@ import express from 'express';
 import authRoutes from './authRoutes.js';
 import evidenceRoutes from './evidenceRoutes.js';
 import userRoutes from './userRoutes.js';
-import shelfRoutes from './shelfRotes.js';
+import shelfRoutes from './shelfRoutes.js';
 import casesRoutes from './caseRoutes.js';
 
 const router = express.Router();
