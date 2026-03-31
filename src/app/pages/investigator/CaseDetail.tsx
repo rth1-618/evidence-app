@@ -5,6 +5,7 @@ import { useUsers } from '../../hooks/useUsers';
 import { useEvidence } from '../../hooks/useEvidence';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { Modal } from '../../components/ui/Modal';
+
 import {
   ArrowLeft, Search, CheckCircle2, XCircle, Trash2,
   MapPin, Shield, Loader2, Plus, Link2, FileText,
@@ -26,6 +27,10 @@ export default function CaseDetail() {
   const [caseForm, setCaseForm] = useState({ description: '', notes: '', priority: 'medium' });
   const [newPerson, setNewPerson] = useState({ name: '', dob: '', role: 'Other', address: '', contact: '' });
   const [searchQuery, setSearchQuery] = useState('');
+  const [caseClose, setCaseClose] = useState(false);
+  const [showCaseClose, setshowCaseClose] = useState(false);
+  const [hideButtons, setHideButtons] = useState(false);
+
 
 
   // Data
@@ -83,7 +88,18 @@ export default function CaseDetail() {
       </button>
     </div>
   );
-
+  // close data
+  const caseClosed = (isOpen: boolean) => {    if (isOpen) {
+    if (caseClose) setCaseClose(true);{
+      updateCase.mutate({ status: 'closed' }, {
+        onSuccess: () => {
+          toast.success("Case closed successfully");
+          setHideButtons(true);
+          //navigate('/investigator/cases');
+        },
+        onError: () => toast.error("Failed to close case. Please try again.")
+      });
+    }}}
   return (
     <div className="max-w-6xl mx-auto p-8 space-y-10 text-slate-800 bg-slate-50/30 rounded-3xl">
 
@@ -98,7 +114,16 @@ export default function CaseDetail() {
             <p className="text-slate-400 font-medium">{caseData?.title}</p>
           </div>
         </div>
-        <StatusBadge color={caseData?.status} size="md" />
+        <div className="flex items-center gap-4">
+          <StatusBadge color={caseData?.status} size="md" />
+          {/** open the alert window  and change status */}
+          <button onClick={() => setshowCaseClose(true)} 
+          className={`flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-red-700 transition-all shadow-sm" ${hideButtons ? 'hidden' : ''}`}
+          >
+            close case
+            <Info size={16} />
+          </button>
+        </div>
       </div>
 
       {/* 2. CASE INFO & PERSONNEL */}
@@ -190,7 +215,8 @@ export default function CaseDetail() {
                   : caseForm.priority === 'medium'
                     ? 'bg-amber-50 border-amber-200 text-amber-700 '
                     : 'bg-emerald-50 border-emerald-200 text-emerald-700 '
-                }`}
+                } `
+              }
               value={caseForm.priority}
               onChange={e => setCaseForm({ ...caseForm, priority: e.target.value })}
             >
@@ -204,7 +230,7 @@ export default function CaseDetail() {
           <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Field Intelligence</label>
           <textarea className="w-full bg-slate-50/50 border border-slate-100 rounded-2xl p-3 text-sm h-32 outline-none focus:ring-2 focus:ring-blue-500/10" rows={6} value={caseForm.notes} onChange={e => setCaseForm({ ...caseForm, notes: e.target.value })} placeholder="Record observations..." />
         </div>
-        <div className="flex justify-end pt-1"><button onClick={() => updateCase.mutate(caseForm)} className="bg-slate-900 text-white px-10 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest hover:bg-black transition-all">Synchronize record</button></div>
+        <div className="flex justify-end pt-1"><button onClick={() => updateCase.mutate(caseForm)} className={`bg-slate-900 text-white px-10 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest hover:bg-black transition-all ${hideButtons ? 'hidden' : ''}`}>Synchronize record</button></div>
       </div>
 
       {/* 4. EVIDENCE CARDS */}
@@ -220,7 +246,7 @@ export default function CaseDetail() {
           </div>
           <button
             onClick={() => setShowEvidenceModal(true)}
-            className="w-full sm:w-auto flex items-center justify-center gap-3 bg-amber-500 text-white px-6 py-3 rounded-2xl text-[11px] font-bold uppercase tracking-widest hover:bg-amber-600 transition-all shadow-lg shadow-amber-100"
+            className={`w-full sm:w-auto flex items-center justify-center gap-3 bg-amber-500 text-white px-6 py-3 rounded-2xl text-[11px] font-bold uppercase tracking-widest hover:bg-amber-600 transition-all shadow-lg shadow-amber-100 ${hideButtons ? 'hidden' : ''}`}
           >
             <Link2 size={16} /> Secure Asset
           </button>
@@ -317,8 +343,8 @@ export default function CaseDetail() {
             </p>
           </div>
           <button
-            onClick={() => setShowPOIModal(true)}
-            className="w-full sm:w-auto flex items-center justify-center gap-3 bg-white border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-2xl text-[11px] font-bold uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+            onClick={() => {setShowPOIModal(true) }}
+             className={`w-full sm:w-auto flex items-center justify-center gap-3 bg-white border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-2xl text-[11px] font-bold uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all shadow-sm ${hideButtons ? 'hidden' : ''}`}
           >
             <Plus size={16} /> Register Subject
           </button>
@@ -448,6 +474,28 @@ export default function CaseDetail() {
           </div>
         </div>
       </Modal>
+      {/* --- MODALS of Close Case --- */}
+        <Modal isOpen={showCaseClose} onClose={() => setshowCaseClose(false)} title="Close Case Confirmation">
+        <div className="space-y-6">
+          <div className="flex items-center gap-3 text-red-500">
+            <div className="p-3 bg-red-50 rounded-full">
+              <AlertCircle size={24} />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold">Are you sure you want to close this case?</h3>
+              <p className="text-sm text-gray-500 mt-1">This action cannot be undone. Make sure all necessary information is recorded before proceeding.</p>
+              <button onClick={() => {caseClosed(true);setshowCaseClose(false)}} className="mt-4 inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-red-700 transition-all shadow-sm">
+                Yes, Close Case
+                <CheckCircle2 size={16} />
+              </button>
+              <button onClick={() => setshowCaseClose(false)} className="mt-4 ml-4 inline-flex items-center gap-2 bg-gray-200 text-gray-700 px-4 py-2 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-gray-300 transition-all shadow-sm">
+                No, Keep Open
+                <XCircle size={16} />
+              </button>
+            </div>  
+          </div>
+          </div>
+          </Modal>      
     </div>
   );
 }
