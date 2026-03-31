@@ -16,7 +16,7 @@ import CustodyRecords from './pages/custodian/CustodyRecords';
 
 // Investigator
 import InvestigatorDashboard from './pages/investigator/Dashboard';
-import Cases from './pages/investigator/MyCases';
+import Cases from './pages/investigator/Cases';
 import CaseDetail from './pages/investigator/CaseDetail';
 import EvidenceMap from './pages/investigator/EvidenceMap';
 import LabRequests from './pages/investigator/LabRequests';
@@ -32,6 +32,7 @@ import DisposalReview from './pages/evidence-manager/DisposalReview';
 import { ProtectedRoute } from './context/ProtectedRoute';
 import { HomeRedirect } from './context/HomeRedirect';
 import MyEvidences from './pages/field-officer/MyEvidences';
+import EvidencePreview from './pages/investigator/EvidencePreview';
 
 export const router = createBrowserRouter([
   {
@@ -115,8 +116,12 @@ export const router = createBrowserRouter([
           element: <Cases />
         },
         {
-          path: 'cases/:caseId',
+          path: 'cases/:id',
           element: <CaseDetail />
+        },
+        {
+          path: 'evidence/:id',
+          element: <EvidencePreview />
         },
         {
           path: 'evidence-map',

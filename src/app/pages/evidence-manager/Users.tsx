@@ -1,4 +1,4 @@
-import React, { use, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 // import { mockSystemUsers } from '../../utils/mockData';
 import { DataTable, Column } from '../../components/ui/DataTable';
 import { StatusBadge } from '../../components/ui/StatusBadge';
@@ -10,10 +10,39 @@ import { IUser } from '../../interfaces/IUser';
 import api from '../../api/axios';
 
 export default function Users() {
-  const { users, isLoading, createUser } = useUsers();
+  const { users, isLoading, createUser, toggleStatus } = useUsers();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newUser, setNewUser] = useState({ name: '', email: '', role: '' as any, badge: '', password: '' } as IUser);
-                  
+  const [badgeError, setBadgeError] = useState('');
+  const [isValidating, setIsValidating] = useState(false);
+
+  // Auto-check as the user types
+  useEffect(() => {
+    const validateBadge = async () => {
+      if ((newUser?.badge as string).length < 3) {
+        setBadgeError('');
+        return;
+      }
+
+      setIsValidating(true);
+      try {
+        const res = await api.get(`/users/check-badge?badge=${newUser.badge}`);
+        if (!res.data.isAvailable) {
+          setBadgeError(res.data.message);
+        } else {
+          setBadgeError('');
+        }
+      } catch (err) {
+        console.error("Validation failed");
+      } finally {
+        setIsValidating(false);
+      }
+    };
+
+    const timeoutId = setTimeout(validateBadge, 500); // Debounce 500ms
+    return () => clearTimeout(timeoutId);
+  }, [newUser.badge]);
+
 
   const userColumns: Column<IUser>[] = [
     { key: 'badge', label: 'Badge', sortable: true },
@@ -40,10 +69,12 @@ export default function Users() {
             // onclick show confirm dialog to confirm status change, then call handleToggleStatus if confirmed
             onClick={() => {
               if (window.confirm(`Are you sure you want to ${item.status === 'active' ? 'deactivate' : 'activate'} user ${item.name}?`)) {
-                handleToggleStatus(item);
+                const newStatus = item.status === 'active' ? 'inactive' : 'active';
+                // Call the mutation from the hook
+                toggleStatus({ id: item._id!, status: newStatus });
               }
             }}
-            className="flex items-center gap-1 px-3 py-1 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+            className={`flex items-center gap-1 px-3 py-1  rounded-lg  ${item.status === 'active' ? "bg-red-200 text-red-700 hover:bg-red-300" : "bg-green-200 text-green-700 hover:bg-green-300"} `}>
             <Power className="w-4 h-4" />
             {item.status === 'active' ? 'Deactivate' : 'Activate'}
           </button>
@@ -51,16 +82,7 @@ export default function Users() {
       )
     }
   ];
-  const handleToggleStatus = async (user: IUser) => {
-    const newStatus = user.status === 'active' ? 'inactive' : 'active';
-    try {
-      await api.put(`/users/status`, {id: user._id, status: newStatus });
-      toast.success(`User ${user.name} is now ${newStatus}`);
-    } catch (error) {
-      console.error('Error updating user status:', error);
-      toast.error('Failed to update user status');
-    }
-  };
+
   const handleCreateUser = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // console.log("Submitting Payload:", newUser);
@@ -175,14 +197,23 @@ export default function Users() {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Badge Number *</label>
-            <input
-              type="text"
-              required
-              value={newUser.badge}
-              onChange={(e) => setNewUser({ ...newUser, badge: e.target.value })}
-              placeholder="e.g., FO-1234"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <div className="relative">
+              <input
+                type="text"
+                required
+                value={newUser.badge}
+                onChange={(e) => setNewUser({ ...newUser, badge: e.target.value.toUpperCase() })}
+                placeholder="e.g., FO-1234"
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${badgeError ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                  }`}
+              />
+              {isValidating && (
+                <div className="absolute right-3 top-2.5">
+                  <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              )}
+            </div>
+            {badgeError && <p className="text-red-500 text-xs mt-1 font-bold">{badgeError}</p>}
           </div>
           <div className="flex gap-3 pt-4">
             <button
@@ -194,9 +225,10 @@ export default function Users() {
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              disabled={!!badgeError || isValidating || !newUser.badge}
+              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed"
             >
-              Create User
+              {isValidating ? 'Validating...' : 'Create User'}
             </button>
           </div>
         </form>

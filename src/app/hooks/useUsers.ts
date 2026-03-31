@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/axios';
 import { IUser } from '../interfaces/IUser';
 
-export const useUsers = () => {
+export const useUsers = (searchTerm?: string) => {
   const queryClient = useQueryClient();
 
   // GET all users
@@ -23,5 +23,31 @@ export const useUsers = () => {
     },
   });
 
-  return { users, isLoading, createUser: createUserMutation.mutate };
+  const searchResults = useQuery({
+    queryKey: ['officer-search', searchTerm],
+    queryFn: async () => {
+      if (!searchTerm || searchTerm.length < 2) return [];
+      const res = await api.get(`/users/search-officer?term=${searchTerm}`);
+      return res.data;
+    },
+    enabled: !!searchTerm && searchTerm.length > 1
+  });
+
+  const toggleStatusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: string }) =>
+      api.put(`/users/status`, { id, status }),
+    onSuccess: () => {
+      // This "refetches" the table immediately
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
+
+
+  return {
+    users, isLoading, createUser: createUserMutation.mutate,
+    officerResults: searchResults.data || [],
+    isSearching: searchResults.isFetching,
+    toggleStatus: toggleStatusMutation.mutate
+  };
+
 };

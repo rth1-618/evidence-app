@@ -10,8 +10,6 @@ export const POISchema = new mongoose.Schema({
   caseId: String,
   address: String,
   investigatorId: String,
-  statement: String,
-  contact: String
 }, {
   timestamps: true
 });

@@ -11,11 +11,13 @@ import { MediaPreview } from '../../components/ui/MediaPreview';
 import { useNavigate } from 'react-router-dom';
 import { Printer } from 'lucide-react';
 import { PrintSticker } from '../../components/core/PrintSticker';
+import { useCases } from '../../hooks/useCases';
 
 export default function SubmitEvidence() {
 
   const { user } = useAuth(); // Automatically get logged in user
   const { submitEvidence, isSubmitting } = useEvidence();
+  const { assignedCases, fieldOfficerCasesLoading: casesLoading } = useCases();
 
   const [formData, setFormData] = useState({
     title: '',
@@ -108,9 +110,7 @@ export default function SubmitEvidence() {
     setMedia(prev => ({ ...prev, [type]: [...prev[type], file] }));
   };
 
-  const assignedCases = mockCases.filter(c =>
-    c.assignedOfficers.includes('John Mitchell') && c.status === 'open'
-  );
+
 
   const evidenceTypes = [
     'Physical',
@@ -171,8 +171,15 @@ export default function SubmitEvidence() {
       // Basic fields
       data.append('title', formData.title);
       data.append('type', formData.type);
-      data.append('caseId', formData.caseId);
+      // data.append('caseId', formData.caseId);
       data.append('description', formData.description);
+
+      // Create a copy or use FormData
+      // Convert empty string to null for Mongoose
+      const finalCaseId = formData.caseId === "" ? null : formData.caseId;
+      if (finalCaseId) {
+        data.append('caseId', finalCaseId);
+      }
 
       // Crucial: Stringify the object for the backend JSON.parse
       data.append('locationFound', JSON.stringify({
@@ -348,18 +355,17 @@ export default function SubmitEvidence() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Associated Case *
+                  Associated Case
                 </label>
                 <select
-                  required
                   value={formData.caseId}
                   onChange={(e) => setFormData({ ...formData, caseId: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="">Select case...</option>
-                  {assignedCases.map((caseItem) => (
-                    <option key={caseItem.id} value={caseItem.id}>
-                      {caseItem.id} - {caseItem.title}
+                  <option value="">General / No Specific Case</option>
+                  {assignedCases.map((caseItem: any) => (
+                    <option key={caseItem._id} value={caseItem.caseId}>
+                      {caseItem.caseId} - {caseItem.title}
                     </option>
                   ))}
                 </select>

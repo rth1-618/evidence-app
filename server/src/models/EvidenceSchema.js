@@ -9,7 +9,7 @@ const evidenceSchema = new mongoose.Schema({
   type: { type: String, required: true }, // e.g., 'physical', 'digital'
   description: { type: String },
   // caseId: { type: String, required: true },
-  caseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Case', default: null },
+  caseId: { type: mongoose.Schema.Types.String, ref: 'Case', default: null },
 
   // Media Arrays (Storing Cloudinary URLs)
   img: [{ type: String }],
@@ -19,7 +19,7 @@ const evidenceSchema = new mongoose.Schema({
 
   status: {
     type: String,
-    enum: ['active', 'pending', 'in-lab', 'disposed'],
+    enum: ['active', 'pending', 'in-lab', 'unassigned', 'disposed'],
     default: 'pending'
   },
 
@@ -47,7 +47,15 @@ const evidenceSchema = new mongoose.Schema({
   pois: [POISchema],
   markedForCourt: { type: Boolean, default: false }
 
-}, { timestamps: true });
+}, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
+
+evidenceSchema.virtual('caseDetails', {
+  ref: 'Case',           // The model to use
+  localField: 'caseId',  // Find cases where 'caseId' matches...
+  foreignField: 'caseId', // ...this field in the Case collection
+  justOne: true          // Returns a single object instead of an array
+});
+
 
 // Note: MongoDB automatically creates an '_id', 
 // so we use 'evidenceId' for your custom string ID.

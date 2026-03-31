@@ -131,7 +131,7 @@ export const PrintSticker = ({
                                 <label className="block text-[10px] font-black uppercase text-gray-500">
                                     {isEvidence() ? 'Case ID' : 'Current Status'}
                                 </label>
-                                <p className="text-lg font-bold border-b border-black pb-1 uppercase">{caseId || status}</p>
+                                <p className="text-lg font-bold border-b border-black pb-1 uppercase">{isEvidence() ? caseId || 'N/A' : status}</p>
                             </div>
                         </div>
 

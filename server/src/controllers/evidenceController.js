@@ -1,3 +1,4 @@
+import CaseSchema from '../models/CaseSchema.js';
 import Evidence from '../models/EvidenceSchema.js';
 
 // @desc    Get all evidence
@@ -72,6 +73,13 @@ export const submitEvidence = async (req, res) => {
       nextId = `EV-${String(lastIdNum + 1).padStart(4, '0')}`;
     }
 
+    let status = 'pending';
+
+    if (caseId === "" || caseId === "null") {
+      caseId = null;
+      status = 'unassigned';
+    }
+
     // 3. Create the document
     const newEvidence = new Evidence({
       title,
@@ -85,11 +93,18 @@ export const submitEvidence = async (req, res) => {
       video: getUrls('video'),
       submittedBy: req.user._id, // From your 'protect' middleware
       submittedByBadge: req.user.badge,
-      status: 'pending',
+      status,
       submittedDate: new Date().toISOString()
     });
 
     await newEvidence.save();
+    if (caseId && caseId !== "null" && caseId !== "") {
+      await CaseSchema.findOneAndUpdate(
+        { caseId: caseId },
+        { $push: { evidenceIds: newEvidence._id } },
+        { returnDocument: 'after' } // Updated here
+      );
+    }
 
     res.status(201).json({
       success: true,
@@ -104,21 +119,74 @@ export const submitEvidence = async (req, res) => {
   }
 };
 
-
 export const getUnassignedEvidence = async (req, res) => {
-  const { location, startDate, endDate } = req.query;
-  let filter = {
-    $or: [
-      { caseId: { $exists: false } },
-      { caseId: null }
-    ]
-  };
+  const searchTerm = req.query.term || req.query.location;
 
-  if (location) filter["locationFound.address"] = { $regex: location, $options: 'i' };
-  if (startDate && endDate) {
-    filter.createdAt = { $gte: new Date(startDate), $lte: new Date(endDate) };
+  let filter = {};
+
+  if (searchTerm) {
+    // 1. GLOBAL SEARCH MODE: If there is a term, ignore status/caseId
+    // This will find "India" even if it is 'pending' or assigned to another case
+    filter = {
+      $or: [
+        { "locationFound.address": { $regex: searchTerm, $options: 'i' } },
+        { "evidenceId": { $regex: searchTerm, $options: 'i' } },
+        { "title": { $regex: searchTerm, $options: 'i' } }
+      ]
+    };
+  } else {
+    // 2. UNASSIGNED POOL MODE: If no term, show only available items
+    filter = {
+      $or: [
+        { caseId: { $exists: false } },
+        { caseId: null },
+        { caseId: "" },
+        { status: 'unassigned' }
+      ]
+    };
   }
 
-  const evidence = await Evidence.find(filter).populate('submittedBy', 'name');
-  res.json(evidence);
+  // console.log("SEARCH MODE:", searchTerm ? "GLOBAL" : "UNASSIGNED_ONLY");
+
+  const results = await Evidence.find(filter).populate('submittedBy', 'name');
+
+  // console.log("FINAL COUNT:", results.length);
+  res.json(results);
+};
+
+
+
+
+export const updateEvidenceStatus = async (req, res) => {
+  try {
+    const { id } = req.params; // Evidence ObjectId
+    const { status, caseId } = req.body; // Custom string e.g. "CASE-101"
+
+    const update = { status };
+
+    if (status === 'unassigned') {
+      update.caseId = null;
+      // Remove Evidence ObjectId from the Case that matches the custom string
+      await CaseSchema.findOneAndUpdate(
+        { caseId: caseId },
+        { [status === 'unassigned' ? '$pull' : '$addToSet']: { evidenceIds: id } },
+        { returnDocument: 'after' } // Updated here
+      );
+    } else {
+      update.caseId = caseId;
+      // Add Evidence ObjectId to the Case that matches the custom string
+      await CaseSchema.findOneAndUpdate(
+        { caseId: caseId },
+        { $addToSet: { evidenceIds: id } }
+      );
+    }
+    const evidence = await Evidence.findByIdAndUpdate(
+      id,
+      update,
+      { returnDocument: 'after' } // Updated here
+    );
+    res.status(200).json({ success: true, data: evidence });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
