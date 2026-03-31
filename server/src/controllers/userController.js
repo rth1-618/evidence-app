@@ -12,6 +12,22 @@ export const getUsers = async (req, res) => {
   }
 };
 
+export const checkBadge = async (req, res) => {
+  try {
+    const { badge } = req.query;
+    // Find if any user already has this badge
+    const user = await User.findOne({ badge: badge.toUpperCase() });
+
+    res.json({
+      isAvailable: !user,
+      message: user ? "Badge number already assigned" : "Available"
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 export const createUser = async (req, res) => {
   try {
     const { name, email, password, role, badge } = req.body;
@@ -35,6 +51,43 @@ export const createUser = async (req, res) => {
     });
 
     res.status(201).json({ success: true, data: { id: newUser._id, name, role } });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const searchFieldOfficers = async (req, res) => {
+  const { term } = req.query; // e.g., ?term=Smith
+  try {
+    const officers = await User.find({
+      role: 'FIELD_OFFICER',
+      $or: [
+        { name: { $regex: term, $options: 'i' } },
+        { badge: { $regex: term, $options: 'i' } }
+      ]
+    }).select('-password');
+    res.json(officers);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+export const updateUserStatus = async (req, res) => {
+  try {
+    const { id, status } = req.body;
+
+    const user = await User.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    ).select('-password');
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    res.status(200).json({ success: true, data: user });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

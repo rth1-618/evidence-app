@@ -23,21 +23,36 @@ export const getCases = async (req, res) => {
     });
   }
 };
+
+export const getCaseById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // We MUST populate these fields to get the actual objects, not just IDs
+    const caseData = await Case.findById(id)
+      .populate('assignedOfficers', 'name badge email')
+      .populate('evidenceIds')
+      .populate('poiIds'); // Ensure this matches your Schema field name
+
+    if (!caseData) {
+      return res.status(404).json({ success: false, message: "Case not found" });
+    }
+
+    res.status(200).json({ success: true, data: caseData });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+
 // create a new case
 export const addCase = async (req, res) => {
   try {
-    const {
-      caseId,
-      title,
-      types,
-      status,
-      investigatorId
-    } = req.body;
+    const { caseId, title, types, status, investigatorId, assignedOfficers } = req.body;
 
-    if (!caseId || !title) {
-      return res.status(400).json({
-        message: "caseId and title are required"
-      });
+    if (!caseId || !title || !investigatorId) {
+      return res.status(400).json({ message: "caseId, title, and investigatorId are required" });
     }
 
     const newCase = await Case.create({
@@ -45,22 +60,17 @@ export const addCase = async (req, res) => {
       title,
       types,
       status,
-      investigatorId
+      investigatorId, // Must be a valid MongoDB _id string
+      assignedOfficers // Array of ObjectIds from your search dropdown
     });
 
-    res.status(201).json({
-      success: true,
-      data: newCase
-    });
-
+    res.status(201).json({ success: true, data: newCase });
   } catch (error) {
-    console.error("ADD CASE ERROR:", error); 
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    console.error("ADD CASE ERROR:", error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 // get all the poi of a case
 export const getPois = async (req, res) => {
@@ -71,7 +81,7 @@ export const getPois = async (req, res) => {
     const pois = await POI.find({
       investigatorId: investigatorId,
       caseId: caseId
-    }); 
+    });
     res.status(200).json({
       success: true,
       data: pois
@@ -85,31 +95,51 @@ export const getPois = async (req, res) => {
   }
 };
 //new case with poi
-export const newPOI = async (req, res) => {
+export const addPOI = async (req, res) => {
   try {
     const {
       name,
       dob,
       role,
       contact,
-      caseId,
-        investigatorId
+      address, // Added from your frontend form
+      caseId, // This is the MongoDB _id of the case
+      investigatorId
     } = req.body;
 
-    if (!name || !dob) {
+    if (!name || !dob || !caseId) {
       return res.status(400).json({
-        message: "Name and date of birth are required"
+        success: false,
+        message: "Name, date of birth, and Case ID are required"
       });
     }
 
+    // 1. Create the POI document
     const newPOI = await POI.create({
       name,
       dob,
       role,
       contact,
+      address,
       caseId,
       investigatorId
     });
+
+    // 2. ATTACH TO CASE: Push the new POI _id into the Case's poiIds array
+    const updatedCase = await Case.findByIdAndUpdate(
+      caseId,
+      { $push: { poiIds: newPOI._id } },
+      { new: true }
+    );
+
+    if (!updatedCase) {
+      // Cleanup: If case doesn't exist, delete the orphaned POI
+      await POI.findByIdAndDelete(newPOI._id);
+      return res.status(404).json({
+        success: false,
+        message: "Target case not found. Subject registration aborted."
+      });
+    }
 
     res.status(201).json({
       success: true,
@@ -117,37 +147,93 @@ export const newPOI = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("ADD POI ERROR:", error); 
+    console.error("ADD POI ERROR:", error);
     res.status(500).json({
       success: false,
       message: error.message
     });
   }
 };
+
 //update evidence status
+// Link multiple evidence items to a case string
 export const verifyEvidence = async (req, res) => {
   try {
-    const evidenceId  = req.body.id;
-    const caseId = req.body.caseId;
-    console.log("Received evidenceId for verification:", evidenceId);
+    const { evidenceIds, caseId } = req.body; // evidenceIds: ["_id1", "_id2"], caseId: "CASE-101"
 
-    const updatedEvidence = await Evidence.findOneAndUpdate(
-      { evidenceId,caseId },
-      { status: 'active' },
-      { returnDocument: 'after' }
+    // 1. Bulk update Evidence status and link to the custom Case String
+    await Evidence.updateMany(
+      { _id: { $in: evidenceIds } },
+      { $set: { status: 'active', caseId: caseId } }
     );
-    console.log("updatedEvidence:", updatedEvidence);
 
-    res.status(200).json({
-      success: true,
-      data: updatedEvidence
-    });
+    // 2. Update the Case document's evidence array using the ObjectIds
+    const updatedCase = await Case.findOneAndUpdate(
+      { caseId: caseId },
+      { $addToSet: { evidenceIds: { $each: evidenceIds } } },
+      { returnDocument: 'after' }
+    ).populate('evidenceIds');
 
+    res.status(200).json({ success: true, data: updatedCase });
   } catch (error) {
-    console.error("VERIFY EVIDENCE ERROR:", error);
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+export const getMyAssignedCases = async (req, res) => {
+  try {
+    // req.user._id is populated by your 'protect' middleware
+    const cases = await Case.find({
+      assignedOfficers: req.user._id,
+      // status: 'open' 
+    }).select('title caseId _id'); // Only send necessary fields
+
+    res.status(200).json({ success: true, data: cases });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getCaseCategories = async (req, res) => {
+  // These should match your Mongoose enum exactly
+  const caseTypes = ['Burglary', 'Theft', 'Fraud', 'Assault', 'Homicide', 'Other'];
+
+  res.status(200).json({
+    success: true,
+    data: { types: caseTypes }
+  });
+};
+
+export const updateCase = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedCase = await Case.findByIdAndUpdate(
+      id,
+      req.body,
+      { returnDocument: 'after' } // Updated here
+    );
+
+    res.status(200).json({ success: true, data: updatedCase });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+export const assignOfficers = async (req, res) => {
+  try {
+    const { id } = req.params; // Case _id
+    const { officerIds } = req.body; // Array of User ObjectIds
+
+    const updatedCase = await Case.findByIdAndUpdate(
+      id,
+      { $set: { assignedOfficers: officerIds } },
+      { new: true }
+    ).populate('assignedOfficers', 'name badge email');
+
+    res.status(200).json({ success: true, data: updatedCase });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };

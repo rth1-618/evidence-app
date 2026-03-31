@@ -1,11 +1,16 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'sonner';
+import { useState } from 'react';
 
-export const useEvidence = () => {
+export const useEvidence = (searchQuery?: string) => {
+    const queryClient = useQueryClient();
+
     const { user, isLoading: authLoading } = useAuth();
     console.log("Current User:", user); // Check if this is null
     console.log("Auth Loading:", authLoading);
+
 
     const submitEvidenceMutation = useMutation({
         mutationFn: async (formData: FormData) => {
@@ -49,6 +54,41 @@ export const useEvidence = () => {
         return shelf;
     };
 
+    const { data: unassignedEvidence = [], isLoading: loadingUnassigned } = useQuery({
+        // 1. queryKey must include the searchQuery to refetch on type
+        queryKey: ['unassigned-evidence', searchQuery],
+
+        queryFn: async () => {
+            // 2. Logic: Send 'term' only if 3+ chars. 
+            // Otherwise, send no params (hits the "Unassigned Mode" in backend)
+            const params = (searchQuery && searchQuery.length >= 3)
+                ? { term: searchQuery }
+                : {};
+
+            const res = await api.get('/evidence/unassigned', { params });
+
+            // 3. Ensure we return the data array correctly
+            return res.data;
+        },
+
+        // 4. Set to true so it loads the default "Unassigned" list on mount
+        enabled: true,
+
+        // 5. Recommended: Keeps the old list visible while the new search is fetching
+        // placeholderData: (previousData) => previousData,
+    });
+
+    const updateStatus = useMutation({
+        mutationFn: ({ id, status, caseId }: { id: string, status: string, caseId?: string }) =>
+            api.patch(`/evidence/${id}/status`, { status, caseId }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['case-detail'] });
+            queryClient.invalidateQueries({ queryKey: ['unassigned-evidence'] });
+            queryClient.invalidateQueries({ queryKey: ['evidence-preview'] });
+            toast.success("Status updated successfully");
+        }
+    });
+
     return {
         myEvidenceList,
         submitEvidence: submitEvidenceMutation.mutateAsync, // .mutateAsync returns a promise
@@ -56,6 +96,9 @@ export const useEvidence = () => {
         linkStorage: linkStorageMutation.mutateAsync,
         isLinking: linkStorageMutation.isPending,
         getEvidenceDetails,
-        getShelfById
+        getShelfById,
+        unassignedEvidence,
+        loadingUnassigned,
+        updateStatus
     };
 };

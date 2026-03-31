@@ -1,7 +1,7 @@
 import express from 'express';
 import { protect } from '../middleware/authMiddleware.js'; // You'll make this for JWT
 import { authorize } from '../middleware/roleHandler.js';
-import { createEvidence, getAllEvidence, getEvidenceById, getMyEvidences, submitEvidence } from '../controllers/evidenceController.js';
+import { createEvidence, getAllEvidence, getEvidenceById, getMyEvidences, getUnassignedEvidence, submitEvidence, updateEvidenceStatus } from '../controllers/evidenceController.js';
 import { upload } from '../middleware/upload.js';
 
 const router = express.Router();
@@ -17,13 +17,13 @@ router.route(
     getMyEvidences
   );
 
+router.route('/unassigned')
+  .get(protect, authorize('INVESTIGATOR', 'EVIDENCE_MANAGER'), getUnassignedEvidence);
+
 router.route('/:id')
-  .get(protect, getEvidenceById)
-// .put(protect, authorize('EVIDENCE_MANAGER'), controller.updateEvidence)
-// .delete(protect, authorize('EVIDENCE_MANAGER'), controller.deleteEvidence);
+  .get(protect, getEvidenceById);
 
-
-
+router.patch('/:id/status', protect, authorize('INVESTIGATOR'), updateEvidenceStatus);
 
 // Only Field Officers (and maybe others) can submit evidence
 router.post(
@@ -37,5 +37,7 @@ router.post(
   ]),
   submitEvidence
 );
+
+
 
 export default router;

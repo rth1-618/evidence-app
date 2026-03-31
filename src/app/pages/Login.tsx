@@ -29,6 +29,9 @@ export default function Login() {
       };
 
       navigate(dashboardMap[user.role] || '/login');
+    } else {
+      setError(result.message || 'Login failed. Please try again.');
+      toast.error(result.message || 'Login failed. Please try again.');
     }
   };
 

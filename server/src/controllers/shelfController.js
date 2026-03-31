@@ -39,7 +39,7 @@ const uploadStatus = async (req, res) => {
         const updatedShelf = await ShelfSchema.findOneAndUpdate(
             { shelfId: shelfId },
             { status: newStatus },
-            { new: true }
+            { returnDocument: 'after' }
         );
         if (!updatedShelf) {
             return res.status(404).json({ message: 'Shelf not found' });
