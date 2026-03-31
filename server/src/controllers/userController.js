@@ -39,3 +39,19 @@ export const createUser = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const searchFieldOfficers = async (req, res) => {
+  const { term } = req.query; // e.g., ?term=Smith
+  try {
+    const officers = await User.find({
+      role: 'FIELD_OFFICER',
+      $or: [
+        { name: { $regex: term, $options: 'i' } },
+        { badge: { $regex: term, $options: 'i' } }
+      ]
+    }).select('-password');
+    res.json(officers);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

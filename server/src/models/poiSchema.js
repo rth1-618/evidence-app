@@ -1,15 +1,18 @@
 import mongoose from 'mongoose';
 import { time } from 'node:console';
 // Schema for Persons of Interest (matches your interface)
-const POISchema = new mongoose.Schema({
+export const POISchema = new mongoose.Schema({
   name: String,
   dob: String,
-  role: String,
+  role: { type: String, enum: ['Suspect', 'Witness', 'Victim', 'Associate', 'Other'] },
   statement: String,
   contact: String,
   caseId: String,
-  investigatorId: String
-},{
-    timestamps: true
+  address: String,
+  investigatorId: String,
+  statement: String,
+  contact: String
+}, {
+  timestamps: true
 });
 export default mongoose.model('POI', POISchema);

@@ -103,3 +103,22 @@ export const submitEvidence = async (req, res) => {
     });
   }
 };
+
+
+export const getUnassignedEvidence = async (req, res) => {
+  const { location, startDate, endDate } = req.query;
+  let filter = {
+    $or: [
+      { caseId: { $exists: false } },
+      { caseId: null }
+    ]
+  };
+
+  if (location) filter["locationFound.address"] = { $regex: location, $options: 'i' };
+  if (startDate && endDate) {
+    filter.createdAt = { $gte: new Date(startDate), $lte: new Date(endDate) };
+  }
+
+  const evidence = await Evidence.find(filter).populate('submittedBy', 'name');
+  res.json(evidence);
+};

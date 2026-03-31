@@ -1,12 +1,5 @@
 import mongoose from 'mongoose';
-
-// Schema for Persons of Interest (matches your interface)
-const POISchema = new mongoose.Schema({
-  name: String,
-  role: String,
-  statement: String,
-  contact: String
-});
+import { POISchema } from './poiSchema.js';
 
 const evidenceSchema = new mongoose.Schema({
   // Manual ID (e.g., "EV-123")
@@ -15,7 +8,8 @@ const evidenceSchema = new mongoose.Schema({
   title: { type: String, required: true },
   type: { type: String, required: true }, // e.g., 'physical', 'digital'
   description: { type: String },
-  caseId: { type: String, required: true },
+  // caseId: { type: String, required: true },
+  caseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Case', default: null },
 
   // Media Arrays (Storing Cloudinary URLs)
   img: [{ type: String }],
