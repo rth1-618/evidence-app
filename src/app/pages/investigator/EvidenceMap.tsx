@@ -11,6 +11,8 @@ import { stat } from 'node:fs';
 import { useMap } from 'react-leaflet';
 import { useEffect } from 'react';
 
+
+// FlyToEvidence component to handle map flyTo when evidence is selected
 function FlyToEvidence({ evidence }: { evidence: any }) {
   const map = useMap();
 
@@ -30,7 +32,8 @@ export default function EvidenceMap() {
   const { user, isLoading: authLoading } = useAuth();
   const [selectedEvidence, setSelectedEvidence] = useState<any>(null);
   const [openCaseId, setOpenCaseId] = useState(null);
-  const center = [51.5074, -0.1278];
+  const center: [number, number] = [51.5074, -0.1278];
+  const [currentIndex, setCurrentIndex] = useState(0);
   // list case
   const { data: caseList = [], isLoading, refetch } = useQuery({
     queryKey: ['cases', user?.id],
@@ -41,6 +44,7 @@ export default function EvidenceMap() {
     },
     enabled: !!user?.id
   });
+
   // list evidence
   const { data: evidenceList = [], isLoading: evidenceLoading } = useQuery({
     queryKey: ['evidence', user?.id],
@@ -51,6 +55,17 @@ export default function EvidenceMap() {
     },
     enabled: !!user?.id
   });
+  // list all evidence and group by location
+  const groupedEvidence: { [key: string]: any[] } = {};
+  evidenceList.forEach((e: any) => {  
+    if (!e.locationFound) return;
+    const key = `${e.locationFound.lat}-${e.locationFound.lng}`;
+  
+    if (!groupedEvidence[key]) groupedEvidence[key] = [];
+        groupedEvidence[key].push(e);
+          //console.log('key:', groupedEvidence[key]);
+  });
+  
   return (
     <div className="flex gap-4">
       {/* 左邊案件列表 */}
@@ -90,7 +105,7 @@ export default function EvidenceMap() {
 
                       <div className="space-y-2">
                         {evidenceList
-                          .filter((e) => e.caseId === c.caseId)
+                          .filter((e: any) => e.caseId === c.caseId)
                           .map((evidence: any) => (
                             <div
                               key={evidence.id}
@@ -131,7 +146,7 @@ export default function EvidenceMap() {
                               )}
                               {/* Media*/}
                               <div className="flex gap-2 mt-2">
-                                {evidence.media?.map((m, index) => (
+                                {evidence.media?.map((m: any, index: number) => (
                                   m.type === "image" && (
                                     <img
                                       key={index}
@@ -162,7 +177,7 @@ export default function EvidenceMap() {
               ? [
                 selectedEvidence.locationFound.lat,
                 selectedEvidence.locationFound.lng,
-              ]
+              ] as [number, number]
               : center
           }
           zoom={13}
@@ -173,39 +188,44 @@ export default function EvidenceMap() {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
 
-          {evidenceList
-            .filter((e) => e.locationFound && e.locationFound.lat && e.locationFound.lng)
-            .map((evidence: any) => (
+          {Object.values(groupedEvidence)
+            .filter((group: any) => group[0]?.locationFound && group[0].locationFound.lat !== undefined && group[0].locationFound.lng !== undefined)
+            .map((group, index) => (
               <Marker
-                key={evidence.id}
+                key={index}
                 position={[
-                  evidence.locationFound.lat,
-                  evidence.locationFound.lng,
+                  group[0].locationFound.lat,
+                  group[0].locationFound.lng,
                 ]}
               >
-                <Popup>
-                  <div>
-                    <div className="font-semibold">{evidence.title}</div>
-                    <div>{evidence.locationFound.address}</div>
-                    <div className={`text-xs px-2 py-1 rounded-full ${evidence.status === "active"
-                      ? "bg-blue-100 text-blue-600"
-                      : evidence.status === "pending"
-                        ? "bg-yellow-100 text-yellow-600"
-                        : evidence.status === "in-lab"
-                          ? "bg-purple-100 text-purple-600"
-                          : "bg-gray-100 text-gray-600"}`}>
-                      {evidence.status}
-                    </div>
-                    <div>
-                      {evidence.media?.map((m, index) => (
-                        m.type === "image" && (
-                          <img
-                            key={index}
-                            src={m.url}
-                            className="w-32 h-24 object-cover rounded flex-shrink-0"
-                          />
-                        )
-                      ))}
+                {/* Popup content for each marker */}
+                <Popup minWidth={300}>
+                  <div className="space-y-2"> 
+                    <div>{group[0].locationFound.address}</div>
+                      <div className="p-2 border rounded bg-gray-50">
+                                  <div className="flex justify-between items-center">
+                                    <button
+                                      onClick={() =>
+                                        setCurrentIndex(
+                                          (currentIndex - 1 + group.length) % group.length
+                                        )
+                                      }
+                                    >
+                                      ◀
+                                    </button>
+                                    <div className="font-semibold">{group[currentIndex]?.caseId || 'No case ID'}</div>
+                                    <div className="font-semibold">{group[currentIndex]?.title || 'No Title'}</div>
+                                    <StatusBadge color={group[currentIndex]?.status} size="md" />
+
+                                    <button
+                                      onClick={() =>
+                                        setCurrentIndex((currentIndex + 1) % group.length)
+                                      }
+                                    >
+                                      ▶
+                                    </button>
+                                  </div>
+
                     </div>
                   </div>
                 </Popup>

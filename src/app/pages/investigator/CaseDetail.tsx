@@ -91,17 +91,17 @@ export default function CaseDetail() {
     </div>
   );
   // close data
-  const caseClosed = (isOpen: boolean) => {    if (isOpen) {
-    if (caseClose) setCaseClose(true);{
+  const caseClosed = (isOpen: boolean) => {
+    if (isOpen) {
       updateCase.mutate({ status: 'closed' }, {
         onSuccess: () => {
           toast.success("Case closed successfully");
-          setHideButtons(true);
           //navigate('/investigator/cases');
         },
         onError: () => toast.error("Failed to close case. Please try again.")
       });
-    }}}
+    }
+  }
   return (
     <div className="max-w-6xl mx-auto p-8 space-y-10 text-slate-800 bg-slate-50/30 rounded-3xl">
 
