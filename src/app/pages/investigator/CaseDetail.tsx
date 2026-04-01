@@ -29,7 +29,8 @@ export default function CaseDetail() {
   const [searchQuery, setSearchQuery] = useState('');
   const [caseClose, setCaseClose] = useState(false);
   const [showCaseClose, setshowCaseClose] = useState(false);
-  const [hideButtons, setHideButtons] = useState(false);
+ 
+  //const [hideButtons, setHideButtons] = useState(false);
 
 
 
@@ -37,6 +38,7 @@ export default function CaseDetail() {
   const { selectedCaseData: caseData, detailLoading, assignOfficer, updateCase, addPOI } = useCases(id);
   const { unassignedEvidence, updateStatus } = useEvidence(searchQuery);
   const { officerResults, isSearching } = useUsers(officerSearch);
+  const hideButtons = caseData?.status === 'closed';
 
   useEffect(() => {
     if (caseData) {

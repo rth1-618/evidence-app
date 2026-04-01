@@ -8,4 +8,6 @@
   Run `npm i` to install the dependencies.
 
   Run `npm run dev` to start the development server.
+  - using mdx eduroam wifi would have problem
+  - run `npm i `& `npm run dev` both on ./evidence-app and ./evidence/server
   
