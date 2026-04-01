@@ -24,7 +24,7 @@ export const useCases = (case_id?: string) => {
         queryKey: ['cases', user?.id],
         queryFn: async () => {
             const res = await api.get('/cases', { params: { investigatorId: user?.id } });
-            console.log('caseList res:', res);
+            // console.log('caseList res:', res);
             return res.data.data;
         },
         enabled: !!user?.id

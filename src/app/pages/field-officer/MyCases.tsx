@@ -44,7 +44,7 @@ export default function MyCases() {
 
   const handleAddPOI = () => {
     // Handle form submission
-    console.log('Adding POI:', poiForm);
+    // console.log('Adding POI:', poiForm);
     setShowAddPOI(false);
     setPoiForm({ name: '', dob: '', role: '', address: '' });
   };

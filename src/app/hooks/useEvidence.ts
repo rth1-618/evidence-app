@@ -8,8 +8,8 @@ export const useEvidence = (searchQuery?: string) => {
     const queryClient = useQueryClient();
 
     const { user, isLoading: authLoading } = useAuth();
-    console.log("Current User:", user); // Check if this is null
-    console.log("Auth Loading:", authLoading);
+    // console.log("Current User:", user); // Check if this is null
+    // console.log("Auth Loading:", authLoading);
 
 
     const submitEvidenceMutation = useMutation({

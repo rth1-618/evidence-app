@@ -33,137 +33,136 @@ export default function EvidenceMap() {
   const center = [51.5074, -0.1278];
   // list case
   const { data: caseList = [], isLoading, refetch } = useQuery({
-        queryKey: ['cases', user?.id],
-        queryFn: async () => {
-          const res = await api.get('/cases', { params: { investigatorId: user!.id } });
-          console.log('res:', res);
-          return res.data.data;
-        },
-        enabled: !!user?.id
-      });
+    queryKey: ['cases', user?.id],
+    queryFn: async () => {
+      const res = await api.get('/cases', { params: { investigatorId: user!.id } });
+      // console.log('res:', res);
+      return res.data.data;
+    },
+    enabled: !!user?.id
+  });
   // list evidence
   const { data: evidenceList = [], isLoading: evidenceLoading } = useQuery({
-        queryKey: ['evidence', user?.id],
-        queryFn: async () => {
-          const res = await api.get('/evidence', { params: { investigatorId: user!.id } });
-          console.log('evidence res:', res);
-          return res.data.data;
-        },
-        enabled: !!user?.id
-      });
-    return(
-      <div className="flex gap-4">
-        {/* 左邊案件列表 */}
-        <div className="w-1/3 space-y-2 bg-white border rounded-lg overflow-y-auto">
-          {caseList.map((c: any) => (
-            <div key={c.caseId} className="border rounded-lg">
-              {/* Case Header */}
-              <div
-                className="p-4 bg-gray-100 cursor-pointer hover:bg-gray-200"
-                onClick={() =>
-                  setOpenCaseId(openCaseId === c.caseId ? null : c.caseId)
-                }
-              >
-                <div className="font-semibold">{c.title}</div>
-                <div className="text-sm text-gray-500">{c.caseId}</div>
-              </div>
+    queryKey: ['evidence', user?.id],
+    queryFn: async () => {
+      const res = await api.get('/evidence', { params: { investigatorId: user!.id } });
+      // console.log('evidence res:', res);
+      return res.data.data;
+    },
+    enabled: !!user?.id
+  });
+  return (
+    <div className="flex gap-4">
+      {/* 左邊案件列表 */}
+      <div className="w-1/3 space-y-2 bg-white border rounded-lg overflow-y-auto">
+        {caseList.map((c: any) => (
+          <div key={c.caseId} className="border rounded-lg">
+            {/* Case Header */}
+            <div
+              className="p-4 bg-gray-100 cursor-pointer hover:bg-gray-200"
+              onClick={() =>
+                setOpenCaseId(openCaseId === c.caseId ? null : c.caseId)
+              }
+            >
+              <div className="font-semibold">{c.title}</div>
+              <div className="text-sm text-gray-500">{c.caseId}</div>
+            </div>
 
-              {/* Case Detail */}
-              {openCaseId === c.caseId && (
-                <div className="p-4 bg-white border-t">
-                  <div className="space-y-2">
-                    <div>
-                      <span className="font-medium">Case ID:</span> {c.caseId}
-                    </div>
-                    <div>
-                      <span className="font-medium">Type:</span> {c.types}
-                    </div>
-                    <div>
-                      <span className="font-medium">Status:</span> {c.status}
-                    </div>
-                    <div>
-                      <span className="font-medium">Description:</span> {c.description}
-                    </div>
-                    <div>
-                      <div className="mt-3">
-                          <div className="font-medium text-gray-800 mb-2">Evidence</div>
+            {/* Case Detail */}
+            {openCaseId === c.caseId && (
+              <div className="p-4 bg-white border-t">
+                <div className="space-y-2">
+                  <div>
+                    <span className="font-medium">Case ID:</span> {c.caseId}
+                  </div>
+                  <div>
+                    <span className="font-medium">Type:</span> {c.types}
+                  </div>
+                  <div>
+                    <span className="font-medium">Status:</span> {c.status}
+                  </div>
+                  <div>
+                    <span className="font-medium">Description:</span> {c.description}
+                  </div>
+                  <div>
+                    <div className="mt-3">
+                      <div className="font-medium text-gray-800 mb-2">Evidence</div>
 
-                          <div className="space-y-2">
-                            {evidenceList
-                              .filter((e) => e.caseId === c.caseId)
-                              .map((evidence: any) => (
-                                <div
-                                  key={evidence.id}
-                                  className="p-3 border rounded-lg bg-gray-50 hover:bg-gray-100 transition"
-                                  onClick={() => setSelectedEvidence(evidence)}
-              
-                                >
-                                  {/* Title + Status */}
-                                  <div className="flex justify-between items-center">
-                                    <span className="font-semibold text-gray-900">
-                                      {evidence.title}
-                                    </span>
+                      <div className="space-y-2">
+                        {evidenceList
+                          .filter((e) => e.caseId === c.caseId)
+                          .map((evidence: any) => (
+                            <div
+                              key={evidence.id}
+                              className="p-3 border rounded-lg bg-gray-50 hover:bg-gray-100 transition"
+                              onClick={() => setSelectedEvidence(evidence)}
 
-                                    <span
-                                      className={`text-xs px-2 py-1 rounded-full ${
-                                        evidence.status === "active"
-                                          ? "bg-blue-100 text-blue-600"
-                                          : evidence.status === "pending"
-                                          ? "bg-yellow-100 text-yellow-600"
-                                          : evidence.status === "in-lab"
+                            >
+                              {/* Title + Status */}
+                              <div className="flex justify-between items-center">
+                                <span className="font-semibold text-gray-900">
+                                  {evidence.title}
+                                </span>
+
+                                <span
+                                  className={`text-xs px-2 py-1 rounded-full ${evidence.status === "active"
+                                      ? "bg-blue-100 text-blue-600"
+                                      : evidence.status === "pending"
+                                        ? "bg-yellow-100 text-yellow-600"
+                                        : evidence.status === "in-lab"
                                           ? "bg-purple-100 text-purple-600"
                                           : "bg-gray-100 text-gray-600"
-                                      }`}
-                                    >
-                                      {evidence.status}
-                                    </span>
-                                  </div>
+                                    }`}
+                                >
+                                  {evidence.status}
+                                </span>
+                              </div>
 
-                                  {/* Description */}
-                                  <div className="text-sm text-gray-600 mt-1">
-                                    {evidence.description}
-                                  </div>
+                              {/* Description */}
+                              <div className="text-sm text-gray-600 mt-1">
+                                {evidence.description}
+                              </div>
 
-                                  {/* Location */}
-                                  {evidence.locationFound && (
-                                    <div className="text-xs text-gray-400 mt-2">
-                                      📍 {evidence.locationFound.address}
-                                    </div>
-                                  )}
-                                  {/* Media*/}
-                                  <div className="flex gap-2 mt-2">
-                                    {evidence.media?.map((m, index) => (
-                                      m.type === "image" && (
-                                        <img
-                                          key={index}
-                                          src={m.url}
-                                          className="w-16 h-12 object-cover rounded"  
-                                        />
-                                      )
-                                    ))}
-                                  </div>
+                              {/* Location */}
+                              {evidence.locationFound && (
+                                <div className="text-xs text-gray-400 mt-2">
+                                  📍 {evidence.locationFound.address}
                                 </div>
-                              ))}
-                          </div>
-                        </div>
-
+                              )}
+                              {/* Media*/}
+                              <div className="flex gap-2 mt-2">
+                                {evidence.media?.map((m, index) => (
+                                  m.type === "image" && (
+                                    <img
+                                      key={index}
+                                      src={m.url}
+                                      className="w-16 h-12 object-cover rounded"
+                                    />
+                                  )
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                      </div>
                     </div>
+
                   </div>
                 </div>
-              )}
-            </div>
-          ))
-          }
-        </div>
-        {/* 右邊地圖 */}
-        <div className="w-2/3 bg-white border rounded-lg overflow-hidden">
+              </div>
+            )}
+          </div>
+        ))
+        }
+      </div>
+      {/* 右邊地圖 */}
+      <div className="w-2/3 bg-white border rounded-lg overflow-hidden">
         <MapContainer
           center={
             selectedEvidence
               ? [
-                  selectedEvidence.locationFound.lat,
-                  selectedEvidence.locationFound.lng,
-                ]
+                selectedEvidence.locationFound.lat,
+                selectedEvidence.locationFound.lng,
+              ]
               : center
           }
           zoom={13}
@@ -177,28 +176,28 @@ export default function EvidenceMap() {
           {evidenceList
             .filter((e) => e.locationFound && e.locationFound.lat && e.locationFound.lng)
             .map((evidence: any) => (
-            <Marker
-              key={evidence.id}
-              position={[
-                evidence.locationFound.lat,
-                evidence.locationFound.lng,
-              ]}
-            >
-              <Popup>
-                <div>
-                  <div className="font-semibold">{evidence.title}</div>
-                  <div>{evidence.locationFound.address}</div>
-                  <div className={`text-xs px-2 py-1 rounded-full ${                    evidence.status === "active"
+              <Marker
+                key={evidence.id}
+                position={[
+                  evidence.locationFound.lat,
+                  evidence.locationFound.lng,
+                ]}
+              >
+                <Popup>
+                  <div>
+                    <div className="font-semibold">{evidence.title}</div>
+                    <div>{evidence.locationFound.address}</div>
+                    <div className={`text-xs px-2 py-1 rounded-full ${evidence.status === "active"
                       ? "bg-blue-100 text-blue-600"
                       : evidence.status === "pending"
-                      ? "bg-yellow-100 text-yellow-600"
-                      : evidence.status === "in-lab"
-                      ? "bg-purple-100 text-purple-600"
-                      : "bg-gray-100 text-gray-600"                  }`}>
-                    {evidence.status}
-                  </div>
-                  <div>
-                     {evidence.media?.map((m, index) => (
+                        ? "bg-yellow-100 text-yellow-600"
+                        : evidence.status === "in-lab"
+                          ? "bg-purple-100 text-purple-600"
+                          : "bg-gray-100 text-gray-600"}`}>
+                      {evidence.status}
+                    </div>
+                    <div>
+                      {evidence.media?.map((m, index) => (
                         m.type === "image" && (
                           <img
                             key={index}
@@ -207,13 +206,13 @@ export default function EvidenceMap() {
                           />
                         )
                       ))}
+                    </div>
                   </div>
-                </div>
-              </Popup>  
-            </Marker>
-          ))}
+                </Popup>
+              </Marker>
+            ))}
         </MapContainer>
-        </div>
       </div>
-    );
+    </div>
+  );
 }

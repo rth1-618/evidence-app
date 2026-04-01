@@ -95,7 +95,7 @@ export const LiveMediaCapture = ({ mode, onCapture, onClose }: LiveMediaProps) =
 
     const handleCaptured = (file: File) => {
         const url = URL.createObjectURL(file);
-        console.log('url:', url);
+        // console.log('url:', url);
 
         setPreviewFile(file);
         setPreviewUrl(url);

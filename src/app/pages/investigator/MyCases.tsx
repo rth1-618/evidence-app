@@ -17,8 +17,8 @@ export default function MyCases() {
   const { user, isLoading: authLoading } = useAuth();
   const componentRef = useRef(null);
   //驗證身分 Verify user role
-  console.log("Current User:", user); // Check if this is null
-  console.log("Auth Loading:", authLoading);
+  // console.log("Current User:", user); // Check if this is null
+  // console.log("Auth Loading:", authLoading);
   const navigate = useNavigate();
   const [selectedCase, setSelectedCase] = useState<string | null>(null);
   const [showAddEvidence, setShowAddEvidence] = useState(false);
@@ -43,7 +43,7 @@ export default function MyCases() {
     const [newCase, setNewCase] = useState({ caseId: '', title: '', types: '', status: 'active', investigatorId: user.id });
     const handleAddCase = async () => {
       try {
-        console.log('case:', newCase);
+        // console.log('case:', newCase);
         const res = await api.post('/cases/addcase', newCase);
         toast.success('Case added successfully');
         setShowAddModal(false);
@@ -60,7 +60,7 @@ export default function MyCases() {
       queryKey: ['cases', user?.id],
       queryFn: async () => {
         const res = await api.get('/cases', { params: { investigatorId: user.id } });
-        console.log('res:', res);
+        // console.log('res:', res);
         return res.data.data;
       },
       enabled: !!user?.id
@@ -91,7 +91,7 @@ export default function MyCases() {
       setSelectedCase(caseItem.caseId);
     };
     const selectedCaseData = caseList.find((c: typeof caseList[0]) => c.caseId === selectedCase);
-    console.log('Selected Case Data:', selectedCaseData); // Check if this is undefined
+    // console.log('Selected Case Data:', selectedCaseData); // Check if this is undefined
 
 
 
@@ -113,7 +113,7 @@ export default function MyCases() {
     // fliter only pending evidence and caseId match selected case
     const caseEvidence = evidenceData.filter((e: any) => e.caseId === selectedCase);
     const filteredEvidence = evidenceData.filter((e: any) => e.status === 'pending');
-    console.log('Filtered Evidence for Selected Case:', filteredEvidence); // Check if this is empty or contains the expected evidence items
+    // console.log('Filtered Evidence for Selected Case:', filteredEvidence); // Check if this is empty or contains the expected evidence items
 
     const evidenceColumns: Column<typeof evidenceData[0]>[] = [
       { key: 'evidenceId', label: 'Evidence ID', sortable: true },
@@ -146,7 +146,7 @@ export default function MyCases() {
                 const res = await api.post(`/cases/verify`, { id: item.evidenceId, caseId: item.caseId });
                 toast.success('Evidence verified successfully');
                 setShowAddEvidence(true);
-                console.log('Verification Response:', res);
+                // console.log('Verification Response:', res);
                 //refetchEvidence(); // Refresh the evidence list after verification
               } catch (error) {
                 console.error('Error verifying evidence:', error);
@@ -171,9 +171,9 @@ export default function MyCases() {
     const { data: poiData = [], isLoading: poiLoading, refetch: refetchPoi } = useQuery({
       queryKey: ['pois', user?.id, selectedCase],
       queryFn: async () => {
-        console.log('Fetching POIs for investigatorId:', user.id, 'and caseId:', selectedCase);
+        // console.log('Fetching POIs for investigatorId:', user.id, 'and caseId:', selectedCase);
         const res = await api.get('/cases/pois', { params: { investigatorId: user.id, caseId: selectedCase } });
-        console.log('pois', res);
+        // console.log('pois', res);
         setShowAddEvidence(false);
         return res.data.data;
       },
@@ -182,7 +182,7 @@ export default function MyCases() {
     /* Persons of Interest Management */
     const handleAddPOI = async () => {
       try {
-        console.log('case:', poiForm);
+        // console.log('case:', poiForm);
         const res = await api.post('/cases/addPOI', { ...poiForm, caseId: selectedCase, investigatorId: user.id });
         toast.success('POI added successfully');
         setShowAddPOI(false);

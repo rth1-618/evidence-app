@@ -61,7 +61,7 @@ export default function ScanAndStore() {
   const handleShelfScanned = async (objectId: string) => {
     try {
       const shelf = await getShelfById(objectId);
-      console.log('shelf:', shelf);
+      // console.log('shelf:', shelf);
 
       if (shelf) {
         setShelfData(shelf);
