@@ -12,12 +12,17 @@ import { useNavigate } from 'react-router-dom';
 import { Printer } from 'lucide-react';
 import { PrintSticker } from '../../components/core/PrintSticker';
 import { useCases } from '../../hooks/useCases';
+import { useGeolocation } from '../../hooks/useGeolocation';
+import LoadingSpinner from '../../components/core/LoadingSpinner';
+import LocationErrorDisplay from '../../components/core/LocationErrorDisplay';
 
 export default function SubmitEvidence() {
 
   const { user } = useAuth(); // Automatically get logged in user
   const { submitEvidence, isSubmitting } = useEvidence();
   const { assignedCases, fieldOfficerCasesLoading: casesLoading } = useCases();
+  const { lat, lng, address, isLocating, error: locationError } = useGeolocation();
+
 
   const [formData, setFormData] = useState({
     title: '',
@@ -40,8 +45,8 @@ export default function SubmitEvidence() {
   const [submittedEvidence, setSubmittedEvidence] = useState<any>({});
   const [files, setFiles] = useState<File[]>([]);
   const [activeRecorder, setActiveRecorder] = useState<'img' | 'video' | 'voiceNote' | null>(null);
-  const [isLocating, setIsLocating] = useState(true);
-  const [locationError, setLocationError] = useState<string | null>(null);
+  // const [isLocating, setIsLocating] = useState(true);
+  // const [locationError, setLocationError] = useState<string | null>(null);
   const [activePreview, setActivePreview] = useState<{ file: File | string, type: string } | null>(null);
 
 
@@ -49,51 +54,10 @@ export default function SubmitEvidence() {
 
   // 1. Auto-set Location and Timestamp
   useEffect(() => {
-    const getPosition = async () => {
-      if (!navigator.geolocation) {
-        setLocationError("Geolocation is not supported by your browser.");
-        setIsLocating(false);
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          const { latitude, longitude } = pos.coords;
-          try {
-            const response = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
-            );
-            const data = await response.json();
-
-            setFormData(prev => ({
-              ...prev,
-              lat: latitude,
-              lng: longitude,
-              location: data.display_name || "Address not found"
-            }));
-            setIsLocating(false); // Success!
-          } catch (error) {
-            console.error("Reverse geocode error:", error);
-            setFormData(prev => ({ ...prev, lat: latitude, lng: longitude, location: "GPS Fixed (No Address)" }));
-            setIsLocating(false);
-          }
-        },
-        (err) => {
-          // Handle User Refusal or Device Errors
-          const messages = {
-            1: "Permission denied. Please enable location in your browser settings to submit evidence.",
-            2: "Location unavailable. Check your device GPS.",
-            3: "Request timed out."
-          };
-          setLocationError(messages[err.code as keyof typeof messages] || "An unknown error occurred.");
-          setIsLocating(false);
-        },
-        { enableHighAccuracy: true, timeout: 10000 }
-      );
-    };
-
-    getPosition();
-  }, []);
+    if (address) {
+      setFormData(prev => ({ ...prev, lat, lng, location: address }));
+    }
+  }, [address, lat, lng]);
 
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, category: 'img' | 'video' | 'voiceNote') => {
@@ -222,35 +186,14 @@ export default function SubmitEvidence() {
     setQrCode('');
   };
 
+  console.log('Location Data:', { lat, lng, address, isLocating, locationError });
   // 1. Show Loading Screen while waiting for GPS
-  if (isLocating) {
-    return (
-      <div className="max-w-4xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <h2 className="text-xl font-semibold text-gray-900">Securing GPS Location...</h2>
-        <p className="text-gray-500">Evidence submission requires verified location data.</p>
-      </div>
-    );
-  }
+  if (isLocating) return <LoadingSpinner message="Securing GPS Location..." />;
+
 
   // 2. Show Error Screen if Permission is Denied
-  if (locationError) {
-    return (
-      <div className="max-w-md mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center p-6 bg-red-50 rounded-2xl border border-red-100">
-        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
-          <MapPin className="w-8 h-8 text-red-600" />
-        </div>
-        <h2 className="text-xl font-bold text-red-900 mb-2">Location Required</h2>
-        <p className="text-red-700 mb-6">{locationError}</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors shadow-lg"
-        >
-          Try Again / Grant Permission
-        </button>
-      </div>
-    );
-  }
+  if (locationError) return <LocationErrorDisplay locationError={locationError} />;
+
 
   if (submitted) {
     return (
