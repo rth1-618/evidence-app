@@ -215,8 +215,7 @@ export default function EvidenceMap() {
                                     </button>
                                     <div className="font-semibold">{group[currentIndex]?.caseId || 'No case ID'}</div>
                                     <div className="font-semibold">{group[currentIndex]?.title || 'No Title'}</div>
-                                    <StatusBadge color={group[currentIndex]?.status} size="md" />
-
+                                    <StatusBadge color={group[currentIndex]?.status || 'No status'} size="md" />
                                     <button
                                       onClick={() =>
                                         setCurrentIndex((currentIndex + 1) % group.length)
