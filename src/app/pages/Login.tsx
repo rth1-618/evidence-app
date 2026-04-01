@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Shield, AlertCircle } from 'lucide-react';
@@ -13,11 +13,27 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('rememberedEmail');
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     const result = await login(email, password);
 
     if (result.success) {
+
+      if (rememberMe) {
+        localStorage.setItem('rememberedEmail', email);
+      } else {
+        localStorage.removeItem('rememberedEmail');
+      }
+
       const user = JSON.parse(localStorage.getItem('user') || '{}');
 
       // Redirect logic based on role
@@ -30,6 +46,7 @@ export default function Login() {
 
       navigate(dashboardMap[user.role] || '/login');
     } else {
+      setIsLoading(false);
       setError(result.message || 'Login failed. Please try again.');
       toast.error(result.message || 'Login failed. Please try again.');
     }
