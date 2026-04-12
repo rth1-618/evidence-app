@@ -15,7 +15,7 @@ Note: You will need internet access to interact with the system.
 ### Installing Dependencies
 Install the dependencies on the root (This installs dependencies for the frontend).
 ```shell
-nom i
+npm i
 ```
 For installing backend dependencies,
 ```shell
