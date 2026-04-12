@@ -29,7 +29,7 @@ export default function CaseDetail() {
   const [searchQuery, setSearchQuery] = useState('');
   const [caseClose, setCaseClose] = useState(false);
   const [showCaseClose, setshowCaseClose] = useState(false);
- 
+
   //const [hideButtons, setHideButtons] = useState(false);
 
 
@@ -119,8 +119,8 @@ export default function CaseDetail() {
         <div className="flex items-center gap-4">
           <StatusBadge color={caseData?.status} size="md" />
           {/** open the alert window  and change status */}
-          <button onClick={() => setshowCaseClose(true)} 
-          className={`flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-red-700 transition-all shadow-sm" ${hideButtons ? 'hidden' : ''}`}
+          <button onClick={() => setshowCaseClose(true)}
+            className={`flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-red-700 transition-all shadow-sm" ${hideButtons ? 'hidden' : ''}`}
           >
             close case
             <Info size={16} />
@@ -282,22 +282,24 @@ export default function CaseDetail() {
 
                     {/* Quick Action Buttons - stopPropagation prevents navigation */}
                     <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
-                      {ev.status !== 'active' ? (
-                        <button
-                          title="Verify Evidence"
-                          onClick={() => updateStatus.mutate({ id: ev._id, status: 'active', caseId: caseData.caseId })}
-                          className="p-1.5 bg-green-50 text-green-600 rounded-lg hover:bg-green-500 hover:text-white transition-all shadow-sm"
-                        >
-                          <CheckCircle2 size={14} />
-                        </button>
-                      ) : (
-                        <button
-                          title="Reject/Unassign"
-                          onClick={() => updateStatus.mutate({ id: ev._id, status: 'unassigned' })}
-                          className="p-1.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-500 hover:text-white transition-all shadow-sm"
-                        >
-                          <XCircle size={14} />
-                        </button>)}
+                      {!hideButtons &&
+                        (ev.status !== 'active' ? (
+                          <button
+                            title="Verify Evidence"
+                            onClick={() => updateStatus.mutate({ id: ev._id, status: 'active', caseId: caseData.caseId })}
+                            className="p-1.5 bg-green-50 text-green-600 rounded-lg hover:bg-green-500 hover:text-white transition-all shadow-sm"
+                          >
+                            <CheckCircle2 size={14} />
+                          </button>
+                        ) : (
+                          <button
+                            title="Reject/Unassign"
+                            onClick={() => updateStatus.mutate({ id: ev._id, status: 'unassigned' })}
+                            className="p-1.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                          >
+                            <XCircle size={14} />
+                          </button>))
+                      }
                     </div>
                   </div>
 
@@ -345,8 +347,8 @@ export default function CaseDetail() {
             </p>
           </div>
           <button
-            onClick={() => {setShowPOIModal(true) }}
-             className={`w-full sm:w-auto flex items-center justify-center gap-3 bg-white border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-2xl text-[11px] font-bold uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all shadow-sm ${hideButtons ? 'hidden' : ''}`}
+            onClick={() => { setShowPOIModal(true) }}
+            className={`w-full sm:w-auto flex items-center justify-center gap-3 bg-white border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-2xl text-[11px] font-bold uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all shadow-sm ${hideButtons ? 'hidden' : ''}`}
           >
             <Plus size={16} /> Register Subject
           </button>
@@ -477,7 +479,7 @@ export default function CaseDetail() {
         </div>
       </Modal>
       {/* --- MODALS of Close Case --- */}
-        <Modal isOpen={showCaseClose} onClose={() => setshowCaseClose(false)} title="Close Case Confirmation">
+      <Modal isOpen={showCaseClose} onClose={() => setshowCaseClose(false)} title="Close Case Confirmation">
         <div className="space-y-6">
           <div className="flex items-center gap-3 text-red-500">
             <div className="p-3 bg-red-50 rounded-full">
@@ -486,7 +488,7 @@ export default function CaseDetail() {
             <div>
               <h3 className="text-lg font-bold">Are you sure you want to close this case?</h3>
               <p className="text-sm text-gray-500 mt-1">This action cannot be undone. Make sure all necessary information is recorded before proceeding.</p>
-              <button onClick={() => {caseClosed(true);setshowCaseClose(false)}} className="mt-4 inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-red-700 transition-all shadow-sm">
+              <button onClick={() => { caseClosed(true); setshowCaseClose(false) }} className="mt-4 inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-2xl text-sm font-bold uppercase tracking-widest hover:bg-red-700 transition-all shadow-sm">
                 Yes, Close Case
                 <CheckCircle2 size={16} />
               </button>
@@ -494,10 +496,10 @@ export default function CaseDetail() {
                 No, Keep Open
                 <XCircle size={16} />
               </button>
-            </div>  
+            </div>
           </div>
-          </div>
-          </Modal>      
+        </div>
+      </Modal>
     </div>
   );
 }

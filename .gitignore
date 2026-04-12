@@ -15,3 +15,6 @@ node_modules/*
 node_modules
 
 .env
+junk
+project_tree.txt
+tree.ps1

@@ -9,8 +9,6 @@ import { MapPin, Plus, User } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from 'sonner';
-import { types } from 'node:util';
-import { stat } from 'node:fs';
 
 
 export default function MyCases() {
@@ -60,7 +58,7 @@ export default function MyCases() {
       queryKey: ['cases', user?.id],
       queryFn: async () => {
         const res = await api.get('/cases', { params: { investigatorId: user.id } });
-        // console.log('res:', res);
+        console.log('res:', res);
         return res.data.data;
       },
       enabled: !!user?.id
