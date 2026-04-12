@@ -59,7 +59,7 @@ export default function Cases() {
     { key: 'caseId', label: 'Case ID', sortable: true },
     { key: 'title', label: 'Title', sortable: true },
     { key: 'types', label: 'Type', sortable: true },
-    { key: 'status', label: 'Status', render: (item) => <StatusBadge color={item.status} /> },
+    { key: 'status', label: 'Status', render: (item) => <StatusBadge color={item.status} />, sortable: true },
     { key: 'priority', label: 'Priority', render: (item) => <StatusBadge color={getPriorityColor(item.priority)} status={item.priority} />, sortable: true },
     { key: 'createdAt', label: 'Created', render: (item) => new Date(item.createdAt).toLocaleDateString(), sortable: true }
   ];

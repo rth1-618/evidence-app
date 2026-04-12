@@ -3,7 +3,7 @@ import React, { use, useEffect, useState } from 'react';
 import { DataTable, Column } from '../../components/ui/DataTable';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { Modal } from '../../components/ui/Modal';
-import { Plus, Power } from 'lucide-react';
+import { Check, Plus, Power } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUsers } from '../../hooks/useUsers';
 import { IUser } from '../../interfaces/IUser';
@@ -211,7 +211,13 @@ export default function Users() {
                 <div className="absolute right-3 top-2.5">
                   <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
                 </div>
-              )}
+              )}{
+                !isValidating && !badgeError && newUser.badge && (
+                  <div className="absolute right-3 top-2.5">
+                    <div className="w-5 h-5 text-green-600 "><Check /></div>
+                  </div>
+                )
+              }
             </div>
             {badgeError && <p className="text-red-500 text-xs mt-1 font-bold">{badgeError}</p>}
           </div>
