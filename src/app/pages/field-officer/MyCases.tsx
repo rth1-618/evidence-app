@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { mockCases, mockEvidence, mockPersonsOfInterest } from '../../utils/mockData';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { DataTable, Column } from '../../components/ui/DataTable';
@@ -17,7 +17,7 @@ export default function MyCases() {
     address: ''
   });
 
-  const assignedCases = mockCases.filter(c => 
+  const assignedCases = mockCases.filter(c =>
     c.assignedOfficers.includes('John Mitchell')
   );
 
@@ -28,7 +28,7 @@ export default function MyCases() {
     {
       key: 'status',
       label: 'Status',
-      render: (item) => <StatusBadge status={item.status} />
+      render: (item) => <StatusBadge color={item.status} />
     },
     {
       key: 'lastModified',
@@ -44,7 +44,7 @@ export default function MyCases() {
 
   const handleAddPOI = () => {
     // Handle form submission
-    console.log('Adding POI:', poiForm);
+    // console.log('Adding POI:', poiForm);
     setShowAddPOI(false);
     setPoiForm({ name: '', dob: '', role: '', address: '' });
   };
@@ -87,7 +87,7 @@ export default function MyCases() {
                 <h3 className="text-xl font-semibold text-gray-900">{selectedCaseData?.title}</h3>
                 <p className="text-gray-600 mt-1">Case ID: {selectedCaseData?.id}</p>
               </div>
-              <StatusBadge status={selectedCaseData?.status || 'open'} size="md" />
+              <StatusBadge color={selectedCaseData?.status || 'open'} size="md" />
             </div>
             <div className="grid grid-cols-3 gap-4 text-sm">
               <div>
@@ -121,7 +121,7 @@ export default function MyCases() {
                         <div className="font-medium text-gray-900">{evidence.id} - {evidence.title}</div>
                         <div className="text-sm text-gray-600 mt-1">{evidence.description}</div>
                       </div>
-                      <StatusBadge status={evidence.status} />
+                      <StatusBadge color={evidence.status} />
                     </div>
                     <div className="flex items-center gap-4 text-xs text-gray-500 mt-3">
                       <span>Type: {evidence.type}</span>

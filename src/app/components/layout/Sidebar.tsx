@@ -1,61 +1,64 @@
 import React from 'react';
-import { NavLink } from 'react-router';
-import { 
-  LayoutDashboard, 
-  Briefcase, 
-  Upload, 
-  Bell, 
-  QrCode, 
-  ArrowLeftRight, 
-  Archive, 
-  Folder, 
-  Map, 
-  FlaskConical, 
-  Users, 
-  BarChart3, 
-  FileText, 
-  Database, 
-  Clock, 
+import { NavLink } from 'react-router-dom';
+import {
+  LayoutDashboard,
+  Briefcase,
+  Upload,
+  Bell,
+  QrCode,
+  ArrowLeftRight,
+  Archive,
+  Folder,
+  Map,
+  FlaskConical,
+  Users,
+  BarChart3,
+  FileText,
+  Database,
+  Clock,
   Trash2,
   Shield,
-  X
+  X,
+  CloudDownload
 } from 'lucide-react';
-import type { UserRole } from '../../context/AuthContext';
+import { UserRole } from '../../interfaces/IUser';
 
 interface NavItem {
   path: string;
   label: string;
   icon: React.ReactNode;
   roles: UserRole[];
+  isImplemented?: boolean;
 }
 
 const navItems: NavItem[] = [
   // Field Officer
-  { path: '/field-officer/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['field-officer'] },
-  { path: '/field-officer/cases', label: 'My Cases', icon: <Briefcase className="w-5 h-5" />, roles: ['field-officer'] },
-  { path: '/field-officer/submit', label: 'Submit Evidence', icon: <Upload className="w-5 h-5" />, roles: ['field-officer'] },
-  { path: '/field-officer/alerts', label: 'My Alerts', icon: <Bell className="w-5 h-5" />, roles: ['field-officer'] },
-  
+  { path: '/field-officer/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['FIELD_OFFICER'] },
+  { path: '/field-officer/cases', label: 'My Cases', icon: <Briefcase className="w-5 h-5" />, roles: ['FIELD_OFFICER'] },
+  { path: '/field-officer/my-submissions', isImplemented: true, label: 'My Submissions', icon: <CloudDownload className="w-5 h-5" />, roles: ['FIELD_OFFICER'] },
+  { path: '/field-officer/submit', isImplemented: true, label: 'Submit Evidence', icon: <Upload className="w-5 h-5" />, roles: ['FIELD_OFFICER'] },
+  { path: '/field-officer/alerts', label: 'My Alerts', icon: <Bell className="w-5 h-5" />, roles: ['FIELD_OFFICER'] },
+
   // Custodian
-  { path: '/custodian/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['custodian'] },
-  { path: '/custodian/scan-store', label: 'Scan & Store', icon: <QrCode className="w-5 h-5" />, roles: ['custodian'] },
-  { path: '/custodian/transfers', label: 'Transfers', icon: <ArrowLeftRight className="w-5 h-5" />, roles: ['custodian'] },
-  { path: '/custodian/custody-records', label: 'Custody Records', icon: <Archive className="w-5 h-5" />, roles: ['custodian'] },
-  
+  { path: '/custodian/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['CUSTODIAN'] },
+  { path: '/custodian/scan-store', isImplemented: true, label: 'Scan & Store', icon: <QrCode className="w-5 h-5" />, roles: ['CUSTODIAN'] },
+  { path: '/custodian/transfers', label: 'Transfers', icon: <ArrowLeftRight className="w-5 h-5" />, roles: ['CUSTODIAN'] },
+  { path: '/custodian/custody-records', label: 'Custody Records', icon: <Archive className="w-5 h-5" />, roles: ['CUSTODIAN'] },
+
   // Investigator
-  { path: '/investigator/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['investigator'] },
-  { path: '/investigator/cases', label: 'Cases', icon: <Folder className="w-5 h-5" />, roles: ['investigator'] },
-  { path: '/investigator/evidence-map', label: 'Evidence Map', icon: <Map className="w-5 h-5" />, roles: ['investigator'] },
-  { path: '/investigator/lab-requests', label: 'Lab Requests', icon: <FlaskConical className="w-5 h-5" />, roles: ['investigator'] },
-  
+  { path: '/investigator/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['INVESTIGATOR'] },
+  { path: '/investigator/cases', isImplemented: true, label: 'Cases', icon: <Folder className="w-5 h-5" />, roles: ['INVESTIGATOR'] },
+  { path: '/investigator/evidence-map', isImplemented: true, label: 'Evidence Map', icon: <Map className="w-5 h-5" />, roles: ['INVESTIGATOR'] },
+  { path: '/investigator/lab-requests', label: 'Lab Requests', icon: <FlaskConical className="w-5 h-5" />, roles: ['INVESTIGATOR'] },
+
   // Evidence Manager
-  { path: '/evidence-manager/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['evidence-manager'] },
-  { path: '/evidence-manager/users', label: 'Users', icon: <Users className="w-5 h-5" />, roles: ['evidence-manager'] },
-  { path: '/evidence-manager/analytics', label: 'Analytics', icon: <BarChart3 className="w-5 h-5" />, roles: ['evidence-manager'] },
-  { path: '/evidence-manager/audit-logs', label: 'Audit Logs', icon: <FileText className="w-5 h-5" />, roles: ['evidence-manager'] },
-  { path: '/evidence-manager/storage', label: 'Storage Config', icon: <Database className="w-5 h-5" />, roles: ['evidence-manager'] },
-  { path: '/evidence-manager/retention', label: 'Retention Rules', icon: <Clock className="w-5 h-5" />, roles: ['evidence-manager'] },
-  { path: '/evidence-manager/disposal', label: 'Disposal Review', icon: <Trash2 className="w-5 h-5" />, roles: ['evidence-manager'] },
+  { path: '/evidence-manager/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, roles: ['EVIDENCE_MANAGER'] },
+  { path: '/evidence-manager/users', isImplemented: true, label: 'Users', icon: <Users className="w-5 h-5" />, roles: ['EVIDENCE_MANAGER'] },
+  { path: '/evidence-manager/analytics', label: 'Analytics', icon: <BarChart3 className="w-5 h-5" />, roles: ['EVIDENCE_MANAGER'] },
+  { path: '/evidence-manager/audit-logs', label: 'Audit Logs', icon: <FileText className="w-5 h-5" />, roles: ['EVIDENCE_MANAGER'] },
+  { path: '/evidence-manager/storage', isImplemented: true, label: 'Storage Config', icon: <Database className="w-5 h-5" />, roles: ['EVIDENCE_MANAGER'] },
+  { path: '/evidence-manager/retention', label: 'Retention Rules', icon: <Clock className="w-5 h-5" />, roles: ['EVIDENCE_MANAGER'] },
+  { path: '/evidence-manager/disposal', label: 'Disposal Review', icon: <Trash2 className="w-5 h-5" />, roles: ['EVIDENCE_MANAGER'] },
 ];
 
 interface SidebarProps {
@@ -68,9 +71,8 @@ export function Sidebar({ userRole, isOpen, onClose }: SidebarProps) {
   const filteredNavItems = navItems.filter(item => item.roles.includes(userRole));
 
   return (
-    <div className={`w-64 bg-[#0B1F3A] h-screen fixed left-0 top-0 flex flex-col z-[1100] transition-transform duration-300 lg:translate-x-0 ${
-      isOpen ? 'translate-x-0' : '-translate-x-full'
-    }`}>
+    <div className={`w-64 bg-[#0B1F3A] h-screen fixed left-0 top-0 flex flex-col z-[1100] transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}>
       {/* Logo/Header */}
       <div className="p-6 border-b border-white/10 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -82,7 +84,7 @@ export function Sidebar({ userRole, isOpen, onClose }: SidebarProps) {
             <p className="text-blue-200 text-xs">Evidence Management</p>
           </div>
         </div>
-        
+
         {/* Close button - only visible on mobile */}
         <button
           onClick={onClose}
@@ -102,10 +104,12 @@ export function Sidebar({ userRole, isOpen, onClose }: SidebarProps) {
               to={item.path}
               onClick={onClose}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${item.isImplemented ? (
                   isActive
                     ? 'bg-blue-600 text-white'
                     : 'text-blue-100 hover:bg-white/5'
+                ) : 'text-blue-100/20 hover:bg-white/5'
+
                 }`
               }
             >

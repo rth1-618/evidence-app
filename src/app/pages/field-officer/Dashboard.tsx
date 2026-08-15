@@ -4,10 +4,10 @@ import { mockCases, mockEvidence, mockAlerts } from '../../utils/mockData';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 
 export default function FieldOfficerDashboard() {
-  const assignedCases = mockCases.filter(c => 
+  const assignedCases = mockCases.filter(c =>
     c.assignedOfficers.includes('John Mitchell')
   );
-  const pendingAlerts = mockAlerts.filter(a => 
+  const pendingAlerts = mockAlerts.filter(a =>
     a.assignedTo === 'John Mitchell' && a.status === 'pending'
   );
   const recentSubmissions = mockEvidence
@@ -79,7 +79,7 @@ export default function FieldOfficerDashboard() {
                     <div className="font-medium text-gray-900">{caseItem.id}</div>
                     <div className="text-sm text-gray-600 mt-1">{caseItem.title}</div>
                   </div>
-                  <StatusBadge status={caseItem.status} />
+                  <StatusBadge color={caseItem.status} />
                 </div>
                 <div className="flex items-center gap-4 text-xs text-gray-500 mt-3">
                   <span>Type: {caseItem.type}</span>
@@ -104,7 +104,7 @@ export default function FieldOfficerDashboard() {
               <div key={alert.id} className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <div className="flex items-start justify-between mb-2">
                   <div className="font-medium text-gray-900">{alert.title}</div>
-                  <StatusBadge status={alert.status} />
+                  <StatusBadge color={alert.status} />
                 </div>
                 <p className="text-sm text-gray-600 mt-2">{alert.message}</p>
                 <div className="text-xs text-gray-500 mt-2">
@@ -143,7 +143,7 @@ export default function FieldOfficerDashboard() {
                   <td className="px-4 py-3 text-sm text-gray-900">{evidence.title}</td>
                   <td className="px-4 py-3 text-sm text-gray-600">{evidence.type}</td>
                   <td className="px-4 py-3 text-sm text-gray-600">{evidence.caseId}</td>
-                  <td className="px-4 py-3"><StatusBadge status={evidence.status} /></td>
+                  <td className="px-4 py-3"><StatusBadge color={evidence.status} /></td>
                   <td className="px-4 py-3 text-sm text-gray-600">
                     {new Date(evidence.submittedDate).toLocaleDateString()}
                   </td>
